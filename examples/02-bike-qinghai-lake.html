@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>环青海湖 4 日骑行</title>
+<style>
+:root{
+  --ink:#16140f; --muted:#6f6a60; --faint:#9a948a;
+  --paper:#f6f5f1; --card:#ffffff; --line:#e0ddd6; --rule:#cfccc3;
+  --accent:#e0362b;
+  --maxw:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;-webkit-text-size-adjust:100%;}
+body{
+  font-family:"Inter","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--paper); color:var(--ink); line-height:1.75;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px calc(40px + env(safe-area-inset-bottom));}
+/* masthead */
+.masthead{border-top:5px solid var(--accent); padding:30px 0 22px;}
+.eyebrow{font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:14px;}
+h1{font-size:38px; line-height:1.18; font-weight:700; letter-spacing:-.01em;}
+h1 .l2{display:block; color:var(--muted); font-weight:500; font-size:30px;}
+.lead{margin-top:16px; font-size:14.5px; color:var(--muted); line-height:1.7; max-width:60ch;}
+.lead b{color:var(--ink); font-weight:600;}
+/* wechat tip */
+.wechat-tip{margin:22px 0; padding:12px 14px; border-left:3px solid var(--accent); background:#fbf1ef; font-size:13px; color:#8a3329; line-height:1.6;}
+/* CTA */
+.cta{margin:6px 0 8px;}
+.btn-open{display:block; width:100%; text-align:center; text-decoration:none;
+  background:var(--accent); color:#fff; font-size:18px; font-weight:600; letter-spacing:.02em;
+  padding:17px 14px;}
+.btn-open:active{transform:translateY(1px); background:#c92f25;}
+.btn-open .sub{display:block; font-size:12px; font-weight:400; opacity:.85; margin-top:4px; letter-spacing:.04em;}
+.cta-note{font-size:12.5px; color:var(--faint); text-align:center; margin-top:10px;}
+/* section */
+section{margin-top:42px;}
+.sec-title{display:flex; align-items:baseline; gap:12px; margin-bottom:18px; padding-bottom:8px; border-bottom:1px solid var(--rule);}
+.sec-title .no{font-size:12px; font-weight:700; color:var(--accent); letter-spacing:.05em;}
+.sec-title .ttl{font-size:17px; font-weight:700; letter-spacing:.02em;}
+.steps{list-style:none; counter-reset:s;}
+.steps li{counter-increment:s; position:relative; padding:0 0 14px 38px; font-size:14px; color:#3a352d; line-height:1.7;}
+.steps li::before{content:counter(s,decimal-leading-zero); position:absolute; left:0; top:1px;
+  width:26px; height:26px; background:var(--ink); color:#fff; font-size:11px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; letter-spacing:0;}
+/* copy card */
+.copy-card{border:1px solid var(--line); background:var(--card); display:flex; gap:0; align-items:stretch;}
+.link-box{flex:1; min-width:0; padding:12px 13px; font-size:11px; color:var(--muted); word-break:break-all; line-height:1.55; user-select:all; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.btn-copy{flex:none; width:74px; border:none; border-left:1px solid var(--line); background:var(--card); color:var(--accent); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;}
+.btn-copy:active{background:#f1efea;}
+/* weather */
+.weather-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+@media(min-width:520px){.weather-grid{grid-template-columns:repeat(3,1fr);}}
+.wk{background:var(--card); padding:13px 13px;}
+.wk-city{font-size:14px; font-weight:600;}
+.wk-city small{display:block; font-size:10.5px; font-weight:400; color:var(--faint); letter-spacing:.04em; margin-top:2px;}
+.wk-t{margin-top:8px; font-size:12px; color:var(--muted); line-height:1.5;}
+.wk-t b{font-size:20px; color:var(--ink); font-weight:700; margin-right:2px;}
+.wk-t span{display:block; margin-top:3px;}
+.src-note{font-size:12px; color:var(--faint); margin-top:12px; line-height:1.65;}
+/* header extras */
+.route-line{margin-top:16px; padding-top:12px; border-top:1px solid var(--line); font-size:14px; color:var(--ink); line-height:1.7;}
+.stays{margin-top:9px; font-size:12.5px; color:var(--muted); line-height:1.7;}
+.stays-lab{display:inline-block; margin-right:8px; font-size:11px; font-weight:700; letter-spacing:.12em; color:var(--faint);}
+/* flights */
+.fl-leg{margin:20px 0 8px; font-size:11.5px; font-weight:700; letter-spacing:.14em; color:var(--accent); text-transform:uppercase;}
+.fl-leg:first-child{margin-top:0;}
+.fl-row{display:grid; grid-template-columns:56px 1fr; column-gap:12px; padding:11px 0; border-top:1px solid var(--line);}
+.fl-row:first-child{border-top:none;}
+.fl-date{font-size:12px; font-weight:600; color:var(--muted); line-height:1.5; font-variant-numeric:tabular-nums;}
+.fl-main{min-width:0;}
+.fl-route{font-size:13.5px; font-weight:600; color:var(--ink); line-height:1.6;}
+.fl-dur{margin-left:6px; font-size:11.5px; font-weight:400; color:var(--faint);}
+.fl-meta{margin-top:4px; font-size:12.5px; color:var(--muted); line-height:1.65;}
+/* timeline */
+.stage{display:flex; align-items:baseline; gap:10px; margin:30px 0 16px;}
+.stage-no{font-size:13px; font-weight:700; color:#fff; background:var(--ink); width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center;}
+.stage-name{font-size:15px; font-weight:700; letter-spacing:.03em;}
+.tl{position:relative;}
+.tl-row{display:grid; grid-template-columns:62px 22px 1fr; column-gap:0; padding-bottom:22px;}
+.tl-row:last-child{padding-bottom:0;}
+.tl-date{font-size:12px; font-weight:600; color:var(--muted); text-align:right; padding-top:2px; line-height:1.3;}
+.tl-date span{display:block; font-weight:400; font-size:11px; color:var(--faint); margin-top:2px;}
+.tl-axis{position:relative;}
+.tl-axis::before{content:""; position:absolute; left:50%; top:6px; bottom:-22px; width:1px; background:var(--rule); transform:translateX(-50%);}
+.tl-row:last-child .tl-axis::before{display:none;}
+.dot{position:absolute; top:7px; left:50%; transform:translateX(-50%); width:11px; height:11px; border-radius:50%; background:var(--accent); border:2px solid var(--paper); box-shadow:0 0 0 1px var(--rule);}
+.cnt{background:var(--card); border:1px solid var(--line); padding:14px 15px;}
+.cnt-name{font-size:15.5px; font-weight:700; line-height:1.4; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);}
+.km{font-size:11.5px; letter-spacing:.06em; color:var(--accent); font-weight:600; margin-bottom:9px; text-transform:uppercase;}
+.row{display:grid; grid-template-columns:46px 1fr; gap:10px; padding:7px 0; border-top:1px dashed var(--line);}
+.row:first-child{border-top:none;}
+.lab{flex:none; font-size:11.5px; font-weight:700; letter-spacing:.08em; color:var(--muted); align-self:start; padding-top:1px;}
+.val{font-size:13.5px; color:#3a352d; line-height:1.65;}
+/* tickets table */
+table.tk{width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); font-size:13px;}
+table.tk th,table.tk td{padding:10px 11px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+table.tk th{background:#f1efea; font-weight:700; font-size:12px; letter-spacing:.03em; border-bottom:2px solid var(--ink);}
+table.tk tr:last-child td{border-bottom:none;}
+table.tk td.price{white-space:nowrap; color:var(--ink); font-weight:600;}
+/* clothing */
+.cloth{background:var(--card); border:1px solid var(--line); padding:13px 15px; margin-bottom:1px;}
+.cloth-g{font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+.cloth-g .sq{width:8px; height:8px; background:var(--accent); display:inline-block; flex:none;}
+.cloth-it{font-size:13px; color:#3a352d; line-height:1.6;}
+/* tips */
+.tips{list-style:none; counter-reset:t;}
+.tips li{counter-increment:t; position:relative; padding:8px 0 8px 30px; font-size:13.5px; color:#3a352d; line-height:1.68; border-top:1px solid var(--line);}
+.tips li:first-child{border-top:none;}
+.tips li::before{content:counter(t,decimal-leading-zero); position:absolute; left:0; top:9px; font-size:11px; font-weight:700; color:var(--accent);}
+footer{margin-top:46px; padding-top:18px; border-top:1px solid var(--rule); font-size:11.5px; color:var(--faint); text-align:center; line-height:1.8;}
+/* visualization */
+.viz-grid{display:grid; grid-template-columns:1fr; gap:14px;}
+@media(min-width:560px){.viz-grid{grid-template-columns:1fr 1fr;}}
+.viz-card{background:var(--card); border:1px solid var(--line); padding:14px 15px; font-variant-numeric:tabular-nums;}
+.viz-card h4{font-size:13px; font-weight:700; margin-bottom:10px; letter-spacing:.02em;}
+.viz-card svg{display:block; width:100%; height:auto;}
+#toast{position:fixed; left:50%; bottom:calc(26px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px);
+  background:rgba(22,20,15,.94); color:#fff; font-size:13.5px; padding:10px 18px; opacity:0; pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease; z-index:9; white-space:nowrap;}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">骑行 · 4 人小队 · 环湖 317km</div>
+    <h1>环青海湖<span class="l2">4 日骑行</span></h1>
+    <p class="lead">西海镇进出 · 全程约 317km · 单日 60–90km · 累计爬升约 1100m</p>
+  </header>
+
+  <div class="wechat-tip">微信内可能无法直接跳转高德：请先点右上角「···」→ 选择「在浏览器中打开」，再点下方按钮。</div>
+
+  <div class="cta">
+    <a class="btn-open" href="https://uri.amap.com/search?keyword=%E9%9D%92%E6%B5%B7%E6%B9%96&src=roadbook&coordinate=gaode&callnative=1">在高德地图中打开行程<span class="sub">自动唤起已安装的高德地图 App</span></a>
+    <div class="cta-note">手机需已安装「高德地图」App</div>
+  </div>
+
+  <section>
+    <div class="sec-title"><span class="no">01</span><span class="ttl">怎么在手机上打开</span></div>
+    <ol class="steps"><li>在<b>手机浏览器</b>（Safari / Chrome）中打开本页；微信内请先用「在浏览器中打开」。</li><li>点击上方按钮，<b>高德地图 App 会自动弹出</b>并生成行程路线图。</li><li>若没有反应，复制下面的链接，粘贴到手机浏览器地址栏打开。</li></ol>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">02</span><span class="ttl">行程链接（备用）</span></div>
+    <div class="copy-card">
+      <div class="link-box" id="linkBox">https://uri.amap.com/search?keyword=%E9%9D%92%E6%B5%B7%E6%B9%96&amp;src=roadbook&amp;coordinate=gaode&amp;callnative=1</div>
+      <button class="btn-copy" id="btnCopy" type="button">复制</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">03</span><span class="ttl">沿途天气速览</span></div>
+    <div class="weather-grid"><div class="wk"><div class="wk-city">西海镇<small>D1</small></div><div class="wk-t"><b>18°</b>/4°<span>晴间多云</span></div></div><div class="wk"><div class="wk-city">黑马河<small>D2</small></div><div class="wk-t"><b>17°</b>/3°<span>晴</span></div></div><div class="wk"><div class="wk-city">刚察<small>D3</small></div><div class="wk-t"><b>16°</b>/2°<span>多云</span></div></div></div>
+    <div class="src-note">湖区海拔 3200m，昼夜温差大、午后常有逆风；高德仅覆盖未来约4天预报，超出部分按同期气候参考。</div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">04</span><span class="ttl">数据可视化</span></div>
+    <div class="viz-grid"><div class="viz-card"><h4>沿途气温区间（昼/夜）</h4><svg viewBox="0 0 720 210" style="width:100%;height:auto" role="img" aria-label="沿途气温区间"><line x1="38" y1="184.0" x2="682" y2="184.0" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="187.0" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">-1°</text><line x1="38" y1="148.1" x2="682" y2="148.1" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="151.1" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">4°</text><line x1="38" y1="112.2" x2="682" y2="112.2" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="115.2" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">9°</text><line x1="38" y1="76.3" x2="682" y2="76.3" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="79.3" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">14°</text><line x1="38" y1="40.4" x2="682" y2="40.4" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="43.4" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">19°</text><line x1="38.0" y1="47.5" x2="38.0" y2="148.1" stroke="#16140f" stroke-width="2.5"/><rect x="32.5" y="42.0" width="11" height="11" fill="#e0362b"/><text x="38.0" y="35.5" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">18°</text><text x="38.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">西海镇</text><line x1="360.0" y1="54.7" x2="360.0" y2="155.3" stroke="#16140f" stroke-width="2.5"/><rect x="354.5" y="49.2" width="11" height="11" fill="#e0362b"/><text x="360.0" y="42.7" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">17°</text><text x="360.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">黑马河</text><line x1="682.0" y1="61.9" x2="682.0" y2="162.5" stroke="#16140f" stroke-width="2.5"/><rect x="676.5" y="56.4" width="11" height="11" fill="#e0362b"/><text x="682.0" y="49.9" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">16°</text><text x="682.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">刚察</text></svg></div><div class="viz-card"><h4>路线示意（累计里程）</h4><svg viewBox="0 0 720 170" style="width:100%;height:auto" role="img" aria-label="路线示意"><line x1="30.0" y1="78" x2="194.2" y2="78" stroke="#16140f" stroke-width="2"/><text x="112.1" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">105 km · 2h · ↑980m</text><text x="112.1" y="109" fill="#9a948a" font-size="9" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">等效 +9.8km</text><line x1="194.2" y1="78" x2="288.1" y2="78" stroke="#16140f" stroke-width="2"/><text x="241.1" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">60 km · 4h · ↑260m</text><line x1="288.1" y1="78" x2="413.2" y2="78" stroke="#16140f" stroke-width="2"/><text x="350.6" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">80 km · 5h · ↑320m</text><text x="350.6" y="109" fill="#9a948a" font-size="9" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">等效 +3.2km</text><line x1="413.2" y1="78" x2="553.9" y2="78" stroke="#16140f" stroke-width="2"/><text x="483.6" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">90 km · 5.5h · ↑280m</text><line x1="553.9" y1="78" x2="690.0" y2="78" stroke="#16140f" stroke-width="2"/><text x="622.0" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">87 km · 5h · ↑240m</text><rect x="23.0" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="30.0" y="60" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">西宁</text><text x="30.0" y="73" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">装车·车程起点</text><rect x="187.2" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="194.2" y="118" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">西海镇</text><text x="194.2" y="131" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">骑行起点</text><rect x="281.1" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="288.1" y="60" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">湖东种羊场</text><text x="288.1" y="73" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">D1</text><rect x="406.2" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="413.2" y="118" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">黑马河</text><text x="413.2" y="131" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">D2·日出</text><rect x="546.9" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="553.9" y="60" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">刚察</text><text x="553.9" y="73" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">D3</text><rect x="683.0" y="71.0" width="14" height="14" fill="#e0362b" rx="1"/><text x="690.0" y="118" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">西海镇</text><text x="690.0" y="131" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">D4·闭环</text></svg></div><div class="viz-card"><h4>预算构成（参考/估算）</h4><svg viewBox="0 0 720 92" style="width:100%;height:auto" role="img" aria-label="预算构成"><rect x="20.0" y="14" width="228.3" height="30" fill="#e0362b" rx="1"/><rect x="248.3" y="14" width="142.7" height="30" fill="#3a352d" rx="1"/><rect x="390.9" y="14" width="190.2" height="30" fill="#6f6a60" rx="1"/><rect x="581.1" y="14" width="71.3" height="30" fill="#9a948a" rx="1"/><rect x="652.4" y="14" width="47.6" height="30" fill="#cfccc3" rx="1"/><text x="20" y="86" fill="#9a948a" font-size="11" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">合计约 2860 元（不含隐性支出）</text></svg><div style="margin-top:8px"><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#e0362b;display:inline-block"></span>住宿(4晚) 960元 (34%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#3a352d;display:inline-block"></span>餐饮 600元 (21%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#6f6a60;display:inline-block"></span>保障车+装车 800元 (28%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#9a948a;display:inline-block"></span>骑行装备租 300元 (10%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#cfccc3;display:inline-block"></span>机动 200元 (7%)</span></div></div><div class="viz-card"><h4>海拔剖面（参考）</h4><svg viewBox="0 0 720 200" style="width:100%;height:auto" role="img" aria-label="海拔剖面"><line x1="38" y1="176.0" x2="682" y2="176.0" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="179.0" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2210m</text><line x1="38" y1="149.3" x2="682" y2="149.3" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="152.3" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2410m</text><line x1="38" y1="122.7" x2="682" y2="122.7" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="125.7" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2610m</text><line x1="38" y1="96.0" x2="682" y2="96.0" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="99.0" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2810m</text><line x1="38" y1="69.3" x2="682" y2="69.3" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="72.3" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">3010m</text><line x1="38" y1="42.7" x2="682" y2="42.7" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="45.7" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">3210m</text><path d="M38.0,176.0 L38.0,169.3 L198.2,42.7 L289.8,41.3 L411.9,30.7 L549.2,30.7 L682.0,42.7 L682.0,176.0 Z" fill="#e0362b" fill-opacity="0.12"/><polyline points="38.0,169.3 198.2,42.7 289.8,41.3 411.9,30.7 549.2,30.7 682.0,42.7" fill="none" stroke="#16140f" stroke-width="2.5"/><text x="38.0" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">0k</text><text x="198.2" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">105k</text><text x="289.8" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">165k</text><text x="411.9" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">245k</text><text x="549.2" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">335k</text><text x="682.0" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">422k</text></svg></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">05</span><span class="ttl">逐站路书</span></div>
+    <div class="stage"><span class="stage-no">01</span><span class="stage-name">骑行段 · D1 – D4</span></div><div class="tl"><div class="tl-row"><div class="tl-date">D1<span>骑行</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">西海镇 → 湖东种羊场</div><div class="km">里程 · 约60km · 约4h</div><div class="row"><span class="lab">天气</span><span class="val">18°/4°</span></div><div class="row"><span class="lab">景点</span><span class="val">湖东沙漠、种羊场观景</span></div><div class="row"><span class="lab">美食</span><span class="val">沿途藏餐、面食</span></div><div class="row"><span class="lab">贴士</span><span class="val">首日热身，按最慢队员定速；每 1h 补水一次</span></div></div></div><div class="tl-row"><div class="tl-date">D2<span>骑行</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">湖东种羊场 → 黑马河</div><div class="km">里程 · 约80km · 约5h</div><div class="row"><span class="lab">天气</span><span class="val">17°/3°</span></div><div class="row"><span class="lab">景点</span><span class="val">江西沟、黑马河日出（次日凌晨）</span></div><div class="row"><span class="lab">贴士</span><span class="val">午后西风强，尽量上午多走</span></div></div></div><div class="tl-row"><div class="tl-date">D3<span>骑行</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">黑马河 → 刚察</div><div class="km">里程 · 约90km · 约5.5h</div><div class="row"><span class="lab">天气</span><span class="val">16°/2°</span></div><div class="row"><span class="lab">景点</span><span class="val">鸟岛（季节性关闭需核实）、泉吉河</span></div><div class="row"><span class="lab">贴士</span><span class="val">本段补给点最稀，出发前带足水</span></div></div></div><div class="tl-row"><div class="tl-date">D4<span>骑行</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">刚察 → 西海镇（闭环）</div><div class="km">里程 · 约87km · 约5h</div><div class="row"><span class="lab">天气</span><span class="val">16°/2°</span></div><div class="row"><span class="lab">景点</span><span class="val">哈尔盖、原子城</span></div><div class="row"><span class="lab">贴士</span><span class="val">回到起点后装车返西宁</span></div></div></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">06</span><span class="ttl">门票与花费参考</span></div>
+    <table class="tk"><tr><th style="width:30%">景点/项目</th><th style="width:30%">票价参考</th><th>预约/说明</th></tr></table>
+    <div class="src-note" style="margin-top:12px; color:#3a352d;">环湖无门票；鸟岛若开放需另购（季节性，出行前核实）。</div>
+    <div class="src-note"></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">07</span><span class="ttl">穿着建议</span></div>
+    <div class="cloth"><div class="cloth-g"><i class="sq"></i>骑行（5–18℃，日晒强、风大）</div><div class="cloth-it">骑行裤 + 速干上衣 + 防风马甲 + 长指手套；头盔必戴；SPF50 防晒与唇膏。</div></div><div class="cloth"><div class="cloth-g"><i class="sq"></i>高原清晨/夜（0–4℃）</div><div class="cloth-it">抓绒或薄羽绒、保暖帽、护膝。</div></div><div class="cloth"><div class="cloth-g"><i class="sq"></i>雨备</div><div class="cloth-it">轻量雨衣（比雨伞实用）；湖区阵雨来得快。</div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">08</span><span class="ttl">注意事项</span></div>
+    <ul class="tips"><li>出发前检查刹车皮、胎压、链条上油；带备用内胎 2 条与补胎工具。</li><li>按最慢队员定速，队尾固定一人收尾；每 1h 集合一次。</li><li>海拔 3200m，首日不要冲强度；有头痛/恶心立即降强度并补水。</li><li>骑行 4 天属短程，无需安排完整休息日；但每日结束后做 15 分钟拉伸。</li></ul>
+  </section>
+
+  <footer>里程为公开路况估算，非高德实测<br>高原骑行注意补水与防风，量力而行</footer>
+</div>
+<div id="toast" role="status"></div>
+<script>
+(function(){
+  var btn=document.getElementById('btnCopy'),box=document.getElementById('linkBox'),toast=document.getElementById('toast'),timer=null;
+  function show(m){toast.textContent=m;toast.classList.add('show');if(timer)clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show');},1600);}
+  if(btn&&box){btn.addEventListener('click',function(){
+    var t=box.textContent.replace(/\s+/g,'');
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){show('已复制，去浏览器地址栏粘贴');},function(){fallback(t);});}
+    else{fallback(t);}
+  });}
+  function fallback(t){var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');show('已复制，去浏览器地址栏粘贴');}catch(e){show('请长按链接文本手动复制');}document.body.removeChild(ta);}
+})();
+</script>
+</body>
+</html>

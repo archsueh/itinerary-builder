@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+package-lock.json
+
+# IDE / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local scratch
+tmp/
+temp/
+*.tmp
+*.log
+
+# Pre-restructure backups of the skill itself (kept locally, never published)
+.backup-*/
+
+# Generated example renders are COMMITTED on purpose — a clone must be
+# browsable without running anything. Do not ignore examples/ or
+# docs/screenshots/. The anti-drift gate (scripts/build_examples.py --check)
+# keeps them honest.

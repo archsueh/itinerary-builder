@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>数媒考察 2026 · 行程闭环与住宿说明</title>
+<style>
+:root{
+  --ink:#16140f; --muted:#6f6a60; --faint:#9a948a;
+  --paper:#f6f5f1; --card:#ffffff; --line:#e0ddd6; --rule:#cfccc3;
+  --accent:#e0362b;
+  --maxw:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;-webkit-text-size-adjust:100%;}
+body{
+  font-family:"Inter","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--paper); color:var(--ink); line-height:1.75;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px calc(40px + env(safe-area-inset-bottom));}
+/* masthead */
+.masthead{border-top:5px solid var(--accent); padding:30px 0 22px;}
+.eyebrow{font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:14px;}
+h1{font-size:38px; line-height:1.18; font-weight:700; letter-spacing:-.01em;}
+h1 .l2{display:block; color:var(--muted); font-weight:500; font-size:30px;}
+.lead{margin-top:16px; font-size:14.5px; color:var(--muted); line-height:1.7; max-width:60ch;}
+.lead b{color:var(--ink); font-weight:600;}
+/* wechat tip */
+.wechat-tip{margin:22px 0; padding:12px 14px; border-left:3px solid var(--accent); background:#fbf1ef; font-size:13px; color:#8a3329; line-height:1.6;}
+/* CTA */
+.cta{margin:6px 0 8px;}
+.btn-open{display:block; width:100%; text-align:center; text-decoration:none;
+  background:var(--accent); color:#fff; font-size:18px; font-weight:600; letter-spacing:.02em;
+  padding:17px 14px;}
+.btn-open:active{transform:translateY(1px); background:#c92f25;}
+.btn-open .sub{display:block; font-size:12px; font-weight:400; opacity:.85; margin-top:4px; letter-spacing:.04em;}
+.cta-note{font-size:12.5px; color:var(--faint); text-align:center; margin-top:10px;}
+/* section */
+section{margin-top:42px;}
+.sec-title{display:flex; align-items:baseline; gap:12px; margin-bottom:18px; padding-bottom:8px; border-bottom:1px solid var(--rule);}
+.sec-title .no{font-size:12px; font-weight:700; color:var(--accent); letter-spacing:.05em;}
+.sec-title .ttl{font-size:17px; font-weight:700; letter-spacing:.02em;}
+.steps{list-style:none; counter-reset:s;}
+.steps li{counter-increment:s; position:relative; padding:0 0 14px 38px; font-size:14px; color:#3a352d; line-height:1.7;}
+.steps li::before{content:counter(s,decimal-leading-zero); position:absolute; left:0; top:1px;
+  width:26px; height:26px; background:var(--ink); color:#fff; font-size:11px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; letter-spacing:0;}
+/* copy card */
+.copy-card{border:1px solid var(--line); background:var(--card); display:flex; gap:0; align-items:stretch;}
+.link-box{flex:1; min-width:0; padding:12px 13px; font-size:11px; color:var(--muted); word-break:break-all; line-height:1.55; user-select:all; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.btn-copy{flex:none; width:74px; border:none; border-left:1px solid var(--line); background:var(--card); color:var(--accent); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;}
+.btn-copy:active{background:#f1efea;}
+/* weather */
+.weather-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+@media(min-width:520px){.weather-grid{grid-template-columns:repeat(3,1fr);}}
+.wk{background:var(--card); padding:13px 13px;}
+.wk-city{font-size:14px; font-weight:600;}
+.wk-city small{display:block; font-size:10.5px; font-weight:400; color:var(--faint); letter-spacing:.04em; margin-top:2px;}
+.wk-t{margin-top:8px; font-size:12px; color:var(--muted); line-height:1.5;}
+.wk-t b{font-size:20px; color:var(--ink); font-weight:700; margin-right:2px;}
+.wk-t span{display:block; margin-top:3px;}
+.src-note{font-size:12px; color:var(--faint); margin-top:12px; line-height:1.65;}
+/* header extras */
+.route-line{margin-top:16px; padding-top:12px; border-top:1px solid var(--line); font-size:14px; color:var(--ink); line-height:1.7;}
+.stays{margin-top:9px; font-size:12.5px; color:var(--muted); line-height:1.7;}
+.stays-lab{display:inline-block; margin-right:8px; font-size:11px; font-weight:700; letter-spacing:.12em; color:var(--faint);}
+/* flights */
+.fl-leg{margin:20px 0 8px; font-size:11.5px; font-weight:700; letter-spacing:.14em; color:var(--accent); text-transform:uppercase;}
+.fl-leg:first-child{margin-top:0;}
+.fl-row{display:grid; grid-template-columns:56px 1fr; column-gap:12px; padding:11px 0; border-top:1px solid var(--line);}
+.fl-row:first-child{border-top:none;}
+.fl-date{font-size:12px; font-weight:600; color:var(--muted); line-height:1.5; font-variant-numeric:tabular-nums;}
+.fl-main{min-width:0;}
+.fl-route{font-size:13.5px; font-weight:600; color:var(--ink); line-height:1.6;}
+.fl-dur{margin-left:6px; font-size:11.5px; font-weight:400; color:var(--faint);}
+.fl-meta{margin-top:4px; font-size:12.5px; color:var(--muted); line-height:1.65;}
+/* timeline */
+.stage{display:flex; align-items:baseline; gap:10px; margin:30px 0 16px;}
+.stage-no{font-size:13px; font-weight:700; color:#fff; background:var(--ink); width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center;}
+.stage-name{font-size:15px; font-weight:700; letter-spacing:.03em;}
+.tl{position:relative;}
+.tl-row{display:grid; grid-template-columns:62px 22px 1fr; column-gap:0; padding-bottom:22px;}
+.tl-row:last-child{padding-bottom:0;}
+.tl-date{font-size:12px; font-weight:600; color:var(--muted); text-align:right; padding-top:2px; line-height:1.3;}
+.tl-date span{display:block; font-weight:400; font-size:11px; color:var(--faint); margin-top:2px;}
+.tl-axis{position:relative;}
+.tl-axis::before{content:""; position:absolute; left:50%; top:6px; bottom:-22px; width:1px; background:var(--rule); transform:translateX(-50%);}
+.tl-row:last-child .tl-axis::before{display:none;}
+.dot{position:absolute; top:7px; left:50%; transform:translateX(-50%); width:11px; height:11px; border-radius:50%; background:var(--accent); border:2px solid var(--paper); box-shadow:0 0 0 1px var(--rule);}
+.cnt{background:var(--card); border:1px solid var(--line); padding:14px 15px;}
+.cnt-name{font-size:15.5px; font-weight:700; line-height:1.4; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);}
+.km{font-size:11.5px; letter-spacing:.06em; color:var(--accent); font-weight:600; margin-bottom:9px; text-transform:uppercase;}
+.row{display:grid; grid-template-columns:46px 1fr; gap:10px; padding:7px 0; border-top:1px dashed var(--line);}
+.row:first-child{border-top:none;}
+.lab{flex:none; font-size:11.5px; font-weight:700; letter-spacing:.08em; color:var(--muted); align-self:start; padding-top:1px;}
+.val{font-size:13.5px; color:#3a352d; line-height:1.65;}
+/* tickets table */
+table.tk{width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); font-size:13px;}
+table.tk th,table.tk td{padding:10px 11px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+table.tk th{background:#f1efea; font-weight:700; font-size:12px; letter-spacing:.03em; border-bottom:2px solid var(--ink);}
+table.tk tr:last-child td{border-bottom:none;}
+table.tk td.price{white-space:nowrap; color:var(--ink); font-weight:600;}
+/* clothing */
+.cloth{background:var(--card); border:1px solid var(--line); padding:13px 15px; margin-bottom:1px;}
+.cloth-g{font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+.cloth-g .sq{width:8px; height:8px; background:var(--accent); display:inline-block; flex:none;}
+.cloth-it{font-size:13px; color:#3a352d; line-height:1.6;}
+/* tips */
+.tips{list-style:none; counter-reset:t;}
+.tips li{counter-increment:t; position:relative; padding:8px 0 8px 30px; font-size:13.5px; color:#3a352d; line-height:1.68; border-top:1px solid var(--line);}
+.tips li:first-child{border-top:none;}
+.tips li::before{content:counter(t,decimal-leading-zero); position:absolute; left:0; top:9px; font-size:11px; font-weight:700; color:var(--accent);}
+footer{margin-top:46px; padding-top:18px; border-top:1px solid var(--rule); font-size:11.5px; color:var(--faint); text-align:center; line-height:1.8;}
+/* visualization */
+.viz-grid{display:grid; grid-template-columns:1fr; gap:14px;}
+@media(min-width:560px){.viz-grid{grid-template-columns:1fr 1fr;}}
+.viz-card{background:var(--card); border:1px solid var(--line); padding:14px 15px; font-variant-numeric:tabular-nums;}
+.viz-card h4{font-size:13px; font-weight:700; margin-bottom:10px; letter-spacing:.02em;}
+.viz-card svg{display:block; width:100%; height:auto;}
+#toast{position:fixed; left:50%; bottom:calc(26px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px);
+  background:rgba(22,20,15,.94); color:#fff; font-size:13.5px; padding:10px 18px; opacity:0; pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease; z-index:9; white-space:nowrap;}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">教研出差 · 7 人 4 地</div>
+    <h1>数媒考察 2026<span class="l2">行程闭环与住宿说明</span></h1>
+    <p class="lead">5/28 – 6/8 · 杭州论坛 → 南京南艺 → 杭州国美 → 北京四校 → 返昆</p>
+  </header>
+
+  <div class="wechat-tip">微信内可能无法直接跳转高德：请先点右上角「···」→ 选择「在浏览器中打开」，再点下方按钮。</div>
+
+  <div class="cta">
+    <a class="btn-open" href="https://uri.amap.com/search?keyword=%E4%B8%AD%E5%9B%BD%E7%BE%8E%E6%9C%AF%E5%AD%A6%E9%99%A2&src=roadbook&coordinate=gaode&callnative=1">在高德地图中打开行程<span class="sub">自动唤起已安装的高德地图 App</span></a>
+    <div class="cta-note">手机需已安装「高德地图」App</div>
+  </div>
+
+  <section>
+    <div class="sec-title"><span class="no">01</span><span class="ttl">怎么在手机上打开</span></div>
+    <ol class="steps"><li>在<b>手机浏览器</b>（Safari / Chrome）中打开本页；微信内请先用「在浏览器中打开」。</li><li>点击上方按钮，<b>高德地图 App 会自动弹出</b>并生成行程路线图。</li><li>若没有反应，复制下面的链接，粘贴到手机浏览器地址栏打开。</li></ol>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">02</span><span class="ttl">行程链接（备用）</span></div>
+    <div class="copy-card">
+      <div class="link-box" id="linkBox">https://uri.amap.com/search?keyword=%E4%B8%AD%E5%9B%BD%E7%BE%8E%E6%9C%AF%E5%AD%A6%E9%99%A2&amp;src=roadbook&amp;coordinate=gaode&amp;callnative=1</div>
+      <button class="btn-copy" id="btnCopy" type="button">复制</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">03</span><span class="ttl">沿途天气速览</span></div>
+    <div class="weather-grid"><div class="wk"><div class="wk-city">杭州<small>5/28-6/2</small></div><div class="wk-t"><b>27°</b>/19°<span>多云</span></div></div><div class="wk"><div class="wk-city">南京<small>5/30</small></div><div class="wk-t"><b>28°</b>/20°<span>晴</span></div></div><div class="wk"><div class="wk-city">北京<small>6/2-6/4</small></div><div class="wk-t"><b>30°</b>/19°<span>晴间多云</span></div></div></div>
+    <div class="src-note">同期气候参考值，非实时预报；出行前请再核对。</div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">04</span><span class="ttl">数据可视化</span></div>
+    <div class="viz-grid"><div class="viz-card"><h4>沿途气温区间（昼/夜）</h4><svg viewBox="0 0 720 210" style="width:100%;height:auto" role="img" aria-label="沿途气温区间"><line x1="38" y1="184.0" x2="682" y2="184.0" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="187.0" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">16°</text><line x1="38" y1="137.5" x2="682" y2="137.5" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="140.5" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">21°</text><line x1="38" y1="91.1" x2="682" y2="91.1" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="94.1" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">26°</text><line x1="38" y1="44.6" x2="682" y2="44.6" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="47.6" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">31°</text><line x1="38.0" y1="81.8" x2="38.0" y2="156.1" stroke="#16140f" stroke-width="2.5"/><rect x="32.5" y="76.3" width="11" height="11" fill="#e0362b"/><text x="38.0" y="69.8" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">27°</text><text x="38.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">杭州</text><line x1="360.0" y1="72.5" x2="360.0" y2="146.8" stroke="#16140f" stroke-width="2.5"/><rect x="354.5" y="67.0" width="11" height="11" fill="#e0362b"/><text x="360.0" y="60.5" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">28°</text><text x="360.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">南京</text><line x1="682.0" y1="53.9" x2="682.0" y2="156.1" stroke="#16140f" stroke-width="2.5"/><rect x="676.5" y="48.4" width="11" height="11" fill="#e0362b"/><text x="682.0" y="41.9" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">30°</text><text x="682.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">北京</text></svg></div><div class="viz-card" style="grid-column:1/-1"><h4>FIG.01 · 人员 × 日历泳道（薛翔核验源）</h4><svg viewBox="0 0 910 422" style="width:100%;height:auto" role="img" aria-label="人员与日历泳道"><rect width="910" height="422" fill="#f6f5f1"/><g font-size="10" fill="#6f6a60" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><text x="118" y="26">5/28</text><text x="188" y="26">5/29</text><text x="258" y="26">5/30</text><text x="328" y="26">5/31</text><text x="398" y="26">6/1</text><text x="468" y="26">6/2</text><text x="538" y="26">6/3</text><text x="608" y="26">6/4</text><text x="678" y="26">6/5</text><text x="748" y="26">6/6</text><text x="818" y="26">6/7-8</text></g><g stroke="#cfccc3" stroke-width="0.6"><line x1="148" y1="38" x2="148" y2="350"/><line x1="218" y1="38" x2="218" y2="350"/><line x1="288" y1="38" x2="288" y2="350"/><line x1="358" y1="38" x2="358" y2="350"/><line x1="428" y1="38" x2="428" y2="350"/><line x1="498" y1="38" x2="498" y2="350"/><line x1="568" y1="38" x2="568" y2="350"/><line x1="638" y1="38" x2="638" y2="350"/><line x1="708" y1="38" x2="708" y2="350"/><line x1="778" y1="38" x2="778" y2="350"/><line x1="848" y1="38" x2="848" y2="350"/></g><g font-size="11" font-weight="700" fill="#e0362b" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><text x="122" y="52">杭·论坛</text><text x="262" y="52">宁·南艺</text><text x="332" y="52">杭 5/31–6/2 · 国美</text><text x="472" y="52">京·四校 · 飞机</text><text x="752" y="52">汉</text></g><text x="12" y="90" font-size="12" fill="#16140f" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">刘恩鹏</text><rect x="118" y="76" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="126" y="91" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杭州论坛</text><rect x="258" y="76" width="70" height="22" rx="1" fill="#8b7355" opacity="0.88"/><text x="266" y="91" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">南艺</text><rect x="328" y="76" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="336" y="91" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杭州·国美</text><rect x="468" y="76" width="210" height="22" rx="1" fill="#5c6b73" opacity="0.88"/><text x="476" y="91" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">北京 · GJ8987入</text><rect x="678" y="76" width="210" height="22" rx="1" fill="#7a6a4f" opacity="0.88"/><text x="686" y="91" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">武汉→返昆</text><text x="12" y="130" font-size="12" fill="#16140f" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">何子金</text><rect x="118" y="116" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="126" y="131" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杭州论坛</text><rect x="258" y="116" width="70" height="22" rx="1" fill="#8b7355" opacity="0.88"/><text x="266" y="131" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">南艺</text><rect x="328" y="116" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="336" y="131" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杭州·国美</text><rect x="468" y="116" width="210" height="22" rx="1" fill="#5c6b73" opacity="0.88"/><text x="476" y="131" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">京 · CA1447返</text><text x="12" y="170" font-size="12" fill="#16140f" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">梁芳</text><rect x="118" y="156" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="126" y="171" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杭州论坛</text><rect x="258" y="156" width="70" height="22" rx="1" fill="#8b7355" opacity="0.88"/><text x="266" y="171" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">南艺</text><rect x="328" y="156" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="336" y="171" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杭·国美→返昆</text><text x="12" y="210" font-size="12" fill="#16140f" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杨雪果</text><rect x="118" y="196" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="126" y="211" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杭州论坛</text><rect x="258" y="196" width="70" height="22" rx="1" fill="#c96442" opacity="0.4"/><text x="266" y="211" font-size="10" fill="#16140f" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">返</text><text x="12" y="250" font-size="12" fill="#e0362b" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">薛翔 ★</text><rect x="258" y="236" width="70" height="22" rx="1" fill="#8b7355" opacity="0.88"/><text x="266" y="251" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">KY8223</text><rect x="328" y="236" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="336" y="251" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">亚朵→开元</text><rect x="468" y="236" width="210" height="22" rx="1" fill="#5c6b73" opacity="0.88"/><text x="476" y="251" font-size="9" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">GJ8987→CA1447</text><text x="12" y="290" font-size="12" fill="#16140f" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">何璞</text><rect x="328" y="276" width="140" height="22" rx="1" fill="#c96442" opacity="0.88"/><text x="336" y="291" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">同住杭两夜</text><rect x="468" y="276" width="210" height="22" rx="1" fill="#5c6b73" opacity="0.88"/><text x="476" y="291" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">同机进京/返昆</text><text x="12" y="330" font-size="12" fill="#16140f" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">杨璐·夏飞</text><rect x="468" y="316" width="210" height="22" rx="1" fill="#5c6b73" opacity="0.88"/><text x="476" y="331" font-size="10" fill="#F5F4ED" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">京段 · CA1447返</text><text x="118" y="291" font-size="9" fill="#6f6a60" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">瑞丽→杭</text><line x1="118" y1="350" x2="888" y2="350" stroke="#cfccc3" stroke-width="0.8"/><g font-size="10" fill="#6f6a60" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><text x="118" y="370">核验：宁全季 / 杭亚朵+开元 / 杭→京 GJ8987 飞机 / 京→昆 CA1447。无无锡、无上海、无 G32。</text><text x="118" y="390">同行：同段航班与住宿以薛翔清单为共同凭证。</text></g></svg></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">05</span><span class="ttl">逐站路书</span></div>
+    <div class="stage"><span class="stage-no">01</span><span class="stage-name">考察段 · 5/28 – 6/4</span></div><div class="tl"><div class="tl-row"><div class="tl-date">5/28<span>—</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">杭州 · 论坛</div><div class="km">里程 · —</div><div class="row"><span class="lab">天气</span><span class="val">27°/19°</span></div><div class="row"><span class="lab">景点</span><span class="val">杭州论坛主会场</span></div><div class="row"><span class="lab">贴士</span><span class="val">全员参加</span></div></div></div><div class="tl-row"><div class="tl-date">5/30<span>—</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">南京 · 南艺</div><div class="km">里程 · —</div><div class="row"><span class="lab">景点</span><span class="val">南京艺术学院</span></div><div class="row"><span class="lab">贴士</span><span class="val">薛翔 KY8223 先抵</span></div></div></div><div class="tl-row"><div class="tl-date">5/31<span>—</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">杭州 · 国美</div><div class="km">里程 · —</div><div class="row"><span class="lab">景点</span><span class="val">中国美术学院</span></div><div class="row"><span class="lab">贴士</span><span class="val">5/31–6/2 全程在杭</span></div></div></div><div class="tl-row"><div class="tl-date">6/2<span>—</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">北京 · 四校</div><div class="km">里程 · —</div><div class="row"><span class="lab">景点</span><span class="val">北京四校</span></div><div class="row"><span class="lab">贴士</span><span class="val">GJ8987 入京，CA1447 返昆</span></div></div></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">06</span><span class="ttl">门票与花费参考</span></div>
+    <table class="tk"><tr><th style="width:30%">景点/项目</th><th style="width:30%">票价参考</th><th>预约/说明</th></tr></table>
+    <div class="src-note" style="margin-top:12px; color:#3a352d;">本次为教研出差，无门票支出。</div>
+    <div class="src-note"></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">07</span><span class="ttl">穿着建议</span></div>
+    <div class="cloth"><div class="cloth-g"><i class="sq"></i>5 月末江浙</div><div class="cloth-it">短袖 + 薄外套，梅雨前多阵雨，备折叠伞。</div></div><div class="cloth"><div class="cloth-g"><i class="sq"></i>6 月初北京</div><div class="cloth-it">白天短袖，早晚加薄外套，日晒强备墨镜。</div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">08</span><span class="ttl">注意事项</span></div>
+    <ul class="tips"><li>进京与返昆均为飞机（GJ8987 / CA1447），非高铁、不经上海。</li><li>同段航班与住宿以薛翔清单为共同凭证。</li></ul>
+  </section>
+
+  <footer>行程与住宿以薛翔核验清单为准<br>同段航班与住宿为共同凭证</footer>
+</div>
+<div id="toast" role="status"></div>
+<script>
+(function(){
+  var btn=document.getElementById('btnCopy'),box=document.getElementById('linkBox'),toast=document.getElementById('toast'),timer=null;
+  function show(m){toast.textContent=m;toast.classList.add('show');if(timer)clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show');},1600);}
+  if(btn&&box){btn.addEventListener('click',function(){
+    var t=box.textContent.replace(/\s+/g,'');
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){show('已复制，去浏览器地址栏粘贴');},function(){fallback(t);});}
+    else{fallback(t);}
+  });}
+  function fallback(t){var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');show('已复制，去浏览器地址栏粘贴');}catch(e){show('请长按链接文本手动复制');}document.body.removeChild(ta);}
+})();
+</script>
+</body>
+</html>

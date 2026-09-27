@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>成都 → 稻城亚丁 6天自驾</title>
+<style>
+:root{
+  --ink:#16140f; --muted:#6f6a60; --faint:#9a948a;
+  --paper:#f6f5f1; --card:#ffffff; --line:#e0ddd6; --rule:#cfccc3;
+  --accent:#e0362b;
+  --maxw:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;-webkit-text-size-adjust:100%;}
+body{
+  font-family:"Inter","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--paper); color:var(--ink); line-height:1.75;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px calc(40px + env(safe-area-inset-bottom));}
+/* masthead */
+.masthead{border-top:5px solid var(--accent); padding:30px 0 22px;}
+.eyebrow{font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:14px;}
+h1{font-size:38px; line-height:1.18; font-weight:700; letter-spacing:-.01em;}
+h1 .l2{display:block; color:var(--muted); font-weight:500; font-size:30px;}
+.lead{margin-top:16px; font-size:14.5px; color:var(--muted); line-height:1.7; max-width:60ch;}
+.lead b{color:var(--ink); font-weight:600;}
+/* wechat tip */
+.wechat-tip{margin:22px 0; padding:12px 14px; border-left:3px solid var(--accent); background:#fbf1ef; font-size:13px; color:#8a3329; line-height:1.6;}
+/* CTA */
+.cta{margin:6px 0 8px;}
+.btn-open{display:block; width:100%; text-align:center; text-decoration:none;
+  background:var(--accent); color:#fff; font-size:18px; font-weight:600; letter-spacing:.02em;
+  padding:17px 14px;}
+.btn-open:active{transform:translateY(1px); background:#c92f25;}
+.btn-open .sub{display:block; font-size:12px; font-weight:400; opacity:.85; margin-top:4px; letter-spacing:.04em;}
+.cta-note{font-size:12.5px; color:var(--faint); text-align:center; margin-top:10px;}
+/* section */
+section{margin-top:42px;}
+.sec-title{display:flex; align-items:baseline; gap:12px; margin-bottom:18px; padding-bottom:8px; border-bottom:1px solid var(--rule);}
+.sec-title .no{font-size:12px; font-weight:700; color:var(--accent); letter-spacing:.05em;}
+.sec-title .ttl{font-size:17px; font-weight:700; letter-spacing:.02em;}
+.steps{list-style:none; counter-reset:s;}
+.steps li{counter-increment:s; position:relative; padding:0 0 14px 38px; font-size:14px; color:#3a352d; line-height:1.7;}
+.steps li::before{content:counter(s,decimal-leading-zero); position:absolute; left:0; top:1px;
+  width:26px; height:26px; background:var(--ink); color:#fff; font-size:11px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; letter-spacing:0;}
+/* copy card */
+.copy-card{border:1px solid var(--line); background:var(--card); display:flex; gap:0; align-items:stretch;}
+.link-box{flex:1; min-width:0; padding:12px 13px; font-size:11px; color:var(--muted); word-break:break-all; line-height:1.55; user-select:all; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.btn-copy{flex:none; width:74px; border:none; border-left:1px solid var(--line); background:var(--card); color:var(--accent); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;}
+.btn-copy:active{background:#f1efea;}
+/* weather */
+.weather-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+@media(min-width:520px){.weather-grid{grid-template-columns:repeat(3,1fr);}}
+.wk{background:var(--card); padding:13px 13px;}
+.wk-city{font-size:14px; font-weight:600;}
+.wk-city small{display:block; font-size:10.5px; font-weight:400; color:var(--faint); letter-spacing:.04em; margin-top:2px;}
+.wk-t{margin-top:8px; font-size:12px; color:var(--muted); line-height:1.5;}
+.wk-t b{font-size:20px; color:var(--ink); font-weight:700; margin-right:2px;}
+.wk-t span{display:block; margin-top:3px;}
+.src-note{font-size:12px; color:var(--faint); margin-top:12px; line-height:1.65;}
+/* header extras */
+.route-line{margin-top:16px; padding-top:12px; border-top:1px solid var(--line); font-size:14px; color:var(--ink); line-height:1.7;}
+.stays{margin-top:9px; font-size:12.5px; color:var(--muted); line-height:1.7;}
+.stays-lab{display:inline-block; margin-right:8px; font-size:11px; font-weight:700; letter-spacing:.12em; color:var(--faint);}
+/* flights */
+.fl-leg{margin:20px 0 8px; font-size:11.5px; font-weight:700; letter-spacing:.14em; color:var(--accent); text-transform:uppercase;}
+.fl-leg:first-child{margin-top:0;}
+.fl-row{display:grid; grid-template-columns:56px 1fr; column-gap:12px; padding:11px 0; border-top:1px solid var(--line);}
+.fl-row:first-child{border-top:none;}
+.fl-date{font-size:12px; font-weight:600; color:var(--muted); line-height:1.5; font-variant-numeric:tabular-nums;}
+.fl-main{min-width:0;}
+.fl-route{font-size:13.5px; font-weight:600; color:var(--ink); line-height:1.6;}
+.fl-dur{margin-left:6px; font-size:11.5px; font-weight:400; color:var(--faint);}
+.fl-meta{margin-top:4px; font-size:12.5px; color:var(--muted); line-height:1.65;}
+/* timeline */
+.stage{display:flex; align-items:baseline; gap:10px; margin:30px 0 16px;}
+.stage-no{font-size:13px; font-weight:700; color:#fff; background:var(--ink); width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center;}
+.stage-name{font-size:15px; font-weight:700; letter-spacing:.03em;}
+.tl{position:relative;}
+.tl-row{display:grid; grid-template-columns:62px 22px 1fr; column-gap:0; padding-bottom:22px;}
+.tl-row:last-child{padding-bottom:0;}
+.tl-date{font-size:12px; font-weight:600; color:var(--muted); text-align:right; padding-top:2px; line-height:1.3;}
+.tl-date span{display:block; font-weight:400; font-size:11px; color:var(--faint); margin-top:2px;}
+.tl-axis{position:relative;}
+.tl-axis::before{content:""; position:absolute; left:50%; top:6px; bottom:-22px; width:1px; background:var(--rule); transform:translateX(-50%);}
+.tl-row:last-child .tl-axis::before{display:none;}
+.dot{position:absolute; top:7px; left:50%; transform:translateX(-50%); width:11px; height:11px; border-radius:50%; background:var(--accent); border:2px solid var(--paper); box-shadow:0 0 0 1px var(--rule);}
+.cnt{background:var(--card); border:1px solid var(--line); padding:14px 15px;}
+.cnt-name{font-size:15.5px; font-weight:700; line-height:1.4; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);}
+.km{font-size:11.5px; letter-spacing:.06em; color:var(--accent); font-weight:600; margin-bottom:9px; text-transform:uppercase;}
+.row{display:grid; grid-template-columns:46px 1fr; gap:10px; padding:7px 0; border-top:1px dashed var(--line);}
+.row:first-child{border-top:none;}
+.lab{flex:none; font-size:11.5px; font-weight:700; letter-spacing:.08em; color:var(--muted); align-self:start; padding-top:1px;}
+.val{font-size:13.5px; color:#3a352d; line-height:1.65;}
+/* tickets table */
+table.tk{width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); font-size:13px;}
+table.tk th,table.tk td{padding:10px 11px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+table.tk th{background:#f1efea; font-weight:700; font-size:12px; letter-spacing:.03em; border-bottom:2px solid var(--ink);}
+table.tk tr:last-child td{border-bottom:none;}
+table.tk td.price{white-space:nowrap; color:var(--ink); font-weight:600;}
+/* clothing */
+.cloth{background:var(--card); border:1px solid var(--line); padding:13px 15px; margin-bottom:1px;}
+.cloth-g{font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+.cloth-g .sq{width:8px; height:8px; background:var(--accent); display:inline-block; flex:none;}
+.cloth-it{font-size:13px; color:#3a352d; line-height:1.6;}
+/* tips */
+.tips{list-style:none; counter-reset:t;}
+.tips li{counter-increment:t; position:relative; padding:8px 0 8px 30px; font-size:13.5px; color:#3a352d; line-height:1.68; border-top:1px solid var(--line);}
+.tips li:first-child{border-top:none;}
+.tips li::before{content:counter(t,decimal-leading-zero); position:absolute; left:0; top:9px; font-size:11px; font-weight:700; color:var(--accent);}
+footer{margin-top:46px; padding-top:18px; border-top:1px solid var(--rule); font-size:11.5px; color:var(--faint); text-align:center; line-height:1.8;}
+/* visualization */
+.viz-grid{display:grid; grid-template-columns:1fr; gap:14px;}
+@media(min-width:560px){.viz-grid{grid-template-columns:1fr 1fr;}}
+.viz-card{background:var(--card); border:1px solid var(--line); padding:14px 15px; font-variant-numeric:tabular-nums;}
+.viz-card h4{font-size:13px; font-weight:700; margin-bottom:10px; letter-spacing:.02em;}
+.viz-card svg{display:block; width:100%; height:auto;}
+#toast{position:fixed; left:50%; bottom:calc(26px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px);
+  background:rgba(22,20,15,.94); color:#fff; font-size:13.5px; padding:10px 18px; opacity:0; pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease; z-index:9; white-space:nowrap;}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">自驾 · 成都 → 稻城亚丁</div>
+    <h1>成都 → 稻城亚丁<span class="l2">6天自驾</span></h1>
+    <p class="lead">10/1 出发 · 全程约 1700km · 去程2天 · 亚丁2天 · 返程2天</p>
+  </header>
+
+  <div class="wechat-tip">微信内可能无法直接跳转高德：请先点右上角「···」→ 选择「在浏览器中打开」，再点下方按钮。</div>
+
+  <div class="cta">
+    <a class="btn-open" href="https://uri.amap.com/search?keyword=%E7%A8%BB%E5%9F%8E%E4%BA%9A%E4%B8%81&src=roadbook&coordinate=gaode&callnative=1">在高德地图中打开行程<span class="sub">自动唤起已安装的高德地图 App</span></a>
+    <div class="cta-note">手机需已安装「高德地图」App</div>
+  </div>
+
+  <section>
+    <div class="sec-title"><span class="no">01</span><span class="ttl">怎么在手机上打开</span></div>
+    <ol class="steps"><li>在<b>手机浏览器</b>（Safari / Chrome）中打开本页；微信内请先用「在浏览器中打开」。</li><li>点击上方按钮，<b>高德地图 App 会自动弹出</b>并生成行程路线图。</li><li>若没有反应，复制下面的链接，粘贴到手机浏览器地址栏打开。</li></ol>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">02</span><span class="ttl">行程链接（备用）</span></div>
+    <div class="copy-card">
+      <div class="link-box" id="linkBox">https://uri.amap.com/search?keyword=%E7%A8%BB%E5%9F%8E%E4%BA%9A%E4%B8%81&amp;src=roadbook&amp;coordinate=gaode&amp;callnative=1</div>
+      <button class="btn-copy" id="btnCopy" type="button">复制</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">03</span><span class="ttl">沿途天气速览</span></div>
+    <div class="weather-grid"><div class="wk"><div class="wk-city">成都<small>10/1 出发</small></div><div class="wk-t"><b>24°</b>/17°<span>多云</span></div></div><div class="wk"><div class="wk-city">康定<small>10/1 宿</small></div><div class="wk-t"><b>16°</b>/4°<span>阵雨转多云</span></div></div><div class="wk"><div class="wk-city">稻城<small>10/2-3</small></div><div class="wk-t"><b>14°</b>/-2°<span>晴</span></div></div></div>
+    <div class="src-note">高德仅提供未来约4天预报，超出部分按同期气候参考并在此注明查询日期。</div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">04</span><span class="ttl">数据可视化</span></div>
+    <div class="viz-grid"><div class="viz-card"><h4>沿途气温区间（昼/夜）</h4><svg viewBox="0 0 720 210" style="width:100%;height:auto" role="img" aria-label="沿途气温区间"><line x1="38" y1="184.0" x2="682" y2="184.0" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="187.0" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">-5°</text><line x1="38" y1="159.3" x2="682" y2="159.3" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="162.3" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">0°</text><line x1="38" y1="134.6" x2="682" y2="134.6" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="137.6" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">5°</text><line x1="38" y1="109.9" x2="682" y2="109.9" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="112.9" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">10°</text><line x1="38" y1="85.2" x2="682" y2="85.2" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="88.2" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">15°</text><line x1="38" y1="60.6" x2="682" y2="60.6" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="63.6" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">20°</text><line x1="38" y1="35.9" x2="682" y2="35.9" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="38.9" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">25°</text><line x1="38.0" y1="40.8" x2="38.0" y2="75.4" stroke="#16140f" stroke-width="2.5"/><rect x="32.5" y="35.3" width="11" height="11" fill="#e0362b"/><text x="38.0" y="28.8" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">24°</text><text x="38.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">成都</text><line x1="360.0" y1="80.3" x2="360.0" y2="139.6" stroke="#16140f" stroke-width="2.5"/><rect x="354.5" y="74.8" width="11" height="11" fill="#e0362b"/><text x="360.0" y="68.3" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">16°</text><text x="360.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">康定</text><line x1="682.0" y1="90.2" x2="682.0" y2="169.2" stroke="#16140f" stroke-width="2.5"/><rect x="676.5" y="84.7" width="11" height="11" fill="#e0362b"/><text x="682.0" y="78.2" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">14°</text><text x="682.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">稻城</text></svg></div><div class="viz-card"><h4>路线示意（累计里程）</h4><svg viewBox="0 0 720 170" style="width:100%;height:auto" role="img" aria-label="路线示意"><line x1="30.0" y1="78" x2="325.3" y2="78" stroke="#16140f" stroke-width="2"/><text x="177.6" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">340 km · 6h</text><line x1="325.3" y1="78" x2="577.1" y2="78" stroke="#16140f" stroke-width="2"/><text x="451.2" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">290 km · 5.5h</text><line x1="577.1" y1="78" x2="690.0" y2="78" stroke="#16140f" stroke-width="2"/><text x="633.6" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">130 km · 2.5h</text><rect x="23.0" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="30.0" y="60" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">成都</text><text x="30.0" y="73" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">出发</text><rect x="318.3" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="325.3" y="118" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">康定</text><text x="325.3" y="131" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">高原第一晚</text><rect x="570.1" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="577.1" y="60" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">理塘</text><text x="577.1" y="73" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">世界高城</text><rect x="683.0" y="71.0" width="14" height="14" fill="#e0362b" rx="1"/><text x="690.0" y="118" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">香格里拉镇</text><text x="690.0" y="131" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">景区住宿</text></svg></div><div class="viz-card"><h4>预算构成（参考/估算）</h4><svg viewBox="0 0 720 92" style="width:100%;height:auto" role="img" aria-label="预算构成"><rect x="20.0" y="14" width="243.9" height="30" fill="#e0362b" rx="1"/><rect x="263.9" y="14" width="182.9" height="30" fill="#3a352d" rx="1"/><rect x="446.8" y="14" width="121.9" height="30" fill="#6f6a60" rx="1"/><rect x="568.7" y="14" width="70.3" height="30" fill="#9a948a" rx="1"/><rect x="639.0" y="14" width="61.0" height="30" fill="#cfccc3" rx="1"/><text x="20" y="86" fill="#9a948a" font-size="11" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">合计约 3346 元（不含隐性支出）</text></svg><div style="margin-top:8px"><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#e0362b;display:inline-block"></span>住宿 1200元 (36%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#3a352d;display:inline-block"></span>油费过路 900元 (27%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#6f6a60;display:inline-block"></span>餐饮 600元 (18%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#9a948a;display:inline-block"></span>门票 346元 (10%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#cfccc3;display:inline-block"></span>机动 300元 (9%)</span></div></div><div class="viz-card"><h4>海拔剖面（参考）</h4><svg viewBox="0 0 720 200" style="width:100%;height:auto" role="img" aria-label="海拔剖面"><line x1="38" y1="176.0" x2="682" y2="176.0" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="179.0" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">450m</text><line x1="38" y1="167.6" x2="682" y2="167.6" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="170.6" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">650m</text><line x1="38" y1="159.2" x2="682" y2="159.2" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="162.2" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">850m</text><line x1="38" y1="150.8" x2="682" y2="150.8" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="153.8" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">1050m</text><line x1="38" y1="142.4" x2="682" y2="142.4" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="145.4" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">1250m</text><line x1="38" y1="133.9" x2="682" y2="133.9" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="136.9" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">1450m</text><line x1="38" y1="125.5" x2="682" y2="125.5" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="128.5" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">1650m</text><line x1="38" y1="117.1" x2="682" y2="117.1" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="120.1" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">1850m</text><line x1="38" y1="108.7" x2="682" y2="108.7" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="111.7" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2050m</text><line x1="38" y1="100.3" x2="682" y2="100.3" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="103.3" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2250m</text><line x1="38" y1="91.9" x2="682" y2="91.9" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="94.9" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2450m</text><line x1="38" y1="83.5" x2="682" y2="83.5" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="86.5" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2650m</text><line x1="38" y1="75.1" x2="682" y2="75.1" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="78.1" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">2850m</text><line x1="38" y1="66.6" x2="682" y2="66.6" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="69.6" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">3050m</text><line x1="38" y1="58.2" x2="682" y2="58.2" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="61.2" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">3250m</text><line x1="38" y1="49.8" x2="682" y2="49.8" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="52.8" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">3450m</text><line x1="38" y1="41.4" x2="682" y2="41.4" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="44.4" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">3650m</text><line x1="38" y1="33.0" x2="682" y2="33.0" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="36.0" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">3850m</text><line x1="38" y1="24.6" x2="682" y2="24.6" stroke="#cfccc3" stroke-width="0.8"/><text x="4" y="27.6" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">4050m</text><path d="M38.0,176.0 L38.0,173.9 L326.1,87.3 L571.8,26.1 L682.0,73.0 L682.0,176.0 Z" fill="#e0362b" fill-opacity="0.12"/><polyline points="38.0,173.9 326.1,87.3 571.8,26.1 682.0,73.0" fill="none" stroke="#16140f" stroke-width="2.5"/><text x="38.0" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">0k</text><text x="326.1" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">340k</text><text x="571.8" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">630k</text><text x="682.0" y="194" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">760k</text></svg></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">05</span><span class="ttl">逐站路书</span></div>
+    <div class="stage"><span class="stage-no">01</span><span class="stage-name">去程 · 10/1 – 10/2</span></div><div class="tl"><div class="tl-row"><div class="tl-date">10/1<span>夜宿</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">康定</div><div class="km">里程 · 约340km · 约6h</div><div class="row"><span class="lab">天气</span><span class="val">16°/4°，阵雨转多云，折多山可能有雾</span></div><div class="row"><span class="lab">景点</span><span class="val">折多山垭口（海拔4298m，短暂停留）· 溜溜城夜景</span></div><div class="row"><span class="lab">美食</span><span class="val">牦牛肉汤锅、酥油茶、糌粑</span></div><div class="row"><span class="lab">贴士</span><span class="val">翻折多山控制车速；康定海拔2560m，为高原适应第一晚，别洗澡、早睡</span></div></div></div><div class="tl-row"><div class="tl-date">10/2<span>到达</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">香格里拉镇（稻城亚丁）</div><div class="km">里程 · 约420km · 约8h</div><div class="row"><span class="lab">天气</span><span class="val">14°/-2°，晴，夜间严寒</span></div><div class="row"><span class="lab">景点</span><span class="val">沿途天路十八弯、卡子拉山、海子山观景台</span></div><div class="row"><span class="lab">贴士</span><span class="val">海拔2900m住宿；当晚不安排景区，红景天提前3天服用</span></div></div></div></div><div class="stage"><span class="stage-no">02</span><span class="stage-name">游玩 · 10/3 – 10/4</span></div><div class="tl"><div class="tl-row"><div class="tl-date">10/3<span>长线</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">亚丁景区 · 牛奶海/五色海</div><div class="row"><span class="lab">天气</span><span class="val">约8°/-3°，高海拔风大</span></div><div class="row"><span class="lab">景点</span><span class="val">扎灌崩→冲古寺→洛绒牛场→牛奶海（4600m）</span></div><div class="row"><span class="lab">门票</span><span class="val">门票146元 + 观光车120元 + 电瓶车往返80元</span></div><div class="row"><span class="lab">贴士</span><span class="val">长线极耗体力，备氧气罐、巧克力；走不动及时下撤</span></div></div></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">06</span><span class="ttl">门票与花费参考</span></div>
+    <table class="tk"><tr><th style="width:30%">景点/项目</th><th style="width:30%">票价参考</th><th>预约/说明</th></tr><tr><td>稻城亚丁景区</td><td class="price">门票146元/人</td><td>旺季限流，提前在官方小程序实名预约</td></tr><tr><td>景区观光车</td><td class="price">120元/人</td><td>必购，扎灌崩—扎灌崩往返</td></tr><tr><td>电瓶车（冲古寺—洛绒牛场）</td><td class="price">往返80元/人</td><td>长线建议乘坐，节省体力</td></tr></table>
+    <div class="src-note" style="margin-top:12px; color:#3a352d;">门票+交通人均约 346 元（不含骑马、索道）；按实际人数与最新官方价格为准。</div>
+    <div class="src-note">价格为 2026 年公开信息参考，节假日可能调整，请以景区官方渠道为准。</div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">07</span><span class="ttl">穿着建议</span></div>
+    <div class="cloth"><div class="cloth-g"><i class="sq"></i>高原白天（5-15℃，日晒强）</div><div class="cloth-it">速干内层 + 抓绒/薄羽绒 + 防风冲锋衣；遮阳帽、墨镜、SPF50 防晒霜、润唇膏必备。</div></div><div class="cloth"><div class="cloth-g"><i class="sq"></i>高海拔徒步（0℃上下、风大）</div><div class="cloth-it">厚羽绒、保暖帽、手套、防滑徒步鞋；长线加带暖宝宝。</div></div><div class="cloth"><div class="cloth-g"><i class="sq"></i>低海拔/车上</div><div class="cloth-it">普通秋装即可，备一套换洗衣物；山区天气多变，雨衣比雨伞实用。</div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">08</span><span class="ttl">注意事项</span></div>
+    <ul class="tips"><li>全程多高海拔弯道，单人驾驶每2小时休息15分钟，雨雪天降速。</li><li>亚丁景区海拔4000m+，有高反症状（头痛、呕吐）立即下撤，勿硬撑。</li><li>出发前检查胎压/刹车/玻璃水/备胎，保险确认含异地救援，下载离线地图。</li><li>亚丁等热门景区国庆限流，门票与酒店务必提前实名预约/预订。</li></ul>
+  </section>
+
+  <footer>里程为 &lt;来源&gt;，YYYY-MM-DD 查询<br>高原行车注意休息，切勿疲劳驾驶</footer>
+</div>
+<div id="toast" role="status"></div>
+<script>
+(function(){
+  var btn=document.getElementById('btnCopy'),box=document.getElementById('linkBox'),toast=document.getElementById('toast'),timer=null;
+  function show(m){toast.textContent=m;toast.classList.add('show');if(timer)clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show');},1600);}
+  if(btn&&box){btn.addEventListener('click',function(){
+    var t=box.textContent.replace(/\s+/g,'');
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){show('已复制，去浏览器地址栏粘贴');},function(){fallback(t);});}
+    else{fallback(t);}
+  });}
+  function fallback(t){var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');show('已复制，去浏览器地址栏粘贴');}catch(e){show('请长按链接文本手动复制');}document.body.removeChild(ta);}
+})();
+</script>
+</body>
+</html>

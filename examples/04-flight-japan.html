@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>日本之旅 · 大阪进东京出</title>
+<style>
+:root{
+  --ink:#16140f; --muted:#6f6a60; --faint:#9a948a;
+  --paper:#f6f5f1; --card:#ffffff; --line:#e0ddd6; --rule:#cfccc3;
+  --accent:#e0362b;
+  --maxw:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;-webkit-text-size-adjust:100%;}
+body{
+  font-family:"Inter","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--paper); color:var(--ink); line-height:1.75;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px calc(40px + env(safe-area-inset-bottom));}
+/* masthead */
+.masthead{border-top:5px solid var(--accent); padding:30px 0 22px;}
+.eyebrow{font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:14px;}
+h1{font-size:38px; line-height:1.18; font-weight:700; letter-spacing:-.01em;}
+h1 .l2{display:block; color:var(--muted); font-weight:500; font-size:30px;}
+.lead{margin-top:16px; font-size:14.5px; color:var(--muted); line-height:1.7; max-width:60ch;}
+.lead b{color:var(--ink); font-weight:600;}
+/* wechat tip */
+.wechat-tip{margin:22px 0; padding:12px 14px; border-left:3px solid var(--accent); background:#fbf1ef; font-size:13px; color:#8a3329; line-height:1.6;}
+/* CTA */
+.cta{margin:6px 0 8px;}
+.btn-open{display:block; width:100%; text-align:center; text-decoration:none;
+  background:var(--accent); color:#fff; font-size:18px; font-weight:600; letter-spacing:.02em;
+  padding:17px 14px;}
+.btn-open:active{transform:translateY(1px); background:#c92f25;}
+.btn-open .sub{display:block; font-size:12px; font-weight:400; opacity:.85; margin-top:4px; letter-spacing:.04em;}
+.cta-note{font-size:12.5px; color:var(--faint); text-align:center; margin-top:10px;}
+/* section */
+section{margin-top:42px;}
+.sec-title{display:flex; align-items:baseline; gap:12px; margin-bottom:18px; padding-bottom:8px; border-bottom:1px solid var(--rule);}
+.sec-title .no{font-size:12px; font-weight:700; color:var(--accent); letter-spacing:.05em;}
+.sec-title .ttl{font-size:17px; font-weight:700; letter-spacing:.02em;}
+.steps{list-style:none; counter-reset:s;}
+.steps li{counter-increment:s; position:relative; padding:0 0 14px 38px; font-size:14px; color:#3a352d; line-height:1.7;}
+.steps li::before{content:counter(s,decimal-leading-zero); position:absolute; left:0; top:1px;
+  width:26px; height:26px; background:var(--ink); color:#fff; font-size:11px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; letter-spacing:0;}
+/* copy card */
+.copy-card{border:1px solid var(--line); background:var(--card); display:flex; gap:0; align-items:stretch;}
+.link-box{flex:1; min-width:0; padding:12px 13px; font-size:11px; color:var(--muted); word-break:break-all; line-height:1.55; user-select:all; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.btn-copy{flex:none; width:74px; border:none; border-left:1px solid var(--line); background:var(--card); color:var(--accent); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;}
+.btn-copy:active{background:#f1efea;}
+/* weather */
+.weather-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+@media(min-width:520px){.weather-grid{grid-template-columns:repeat(3,1fr);}}
+.wk{background:var(--card); padding:13px 13px;}
+.wk-city{font-size:14px; font-weight:600;}
+.wk-city small{display:block; font-size:10.5px; font-weight:400; color:var(--faint); letter-spacing:.04em; margin-top:2px;}
+.wk-t{margin-top:8px; font-size:12px; color:var(--muted); line-height:1.5;}
+.wk-t b{font-size:20px; color:var(--ink); font-weight:700; margin-right:2px;}
+.wk-t span{display:block; margin-top:3px;}
+.src-note{font-size:12px; color:var(--faint); margin-top:12px; line-height:1.65;}
+/* header extras */
+.route-line{margin-top:16px; padding-top:12px; border-top:1px solid var(--line); font-size:14px; color:var(--ink); line-height:1.7;}
+.stays{margin-top:9px; font-size:12.5px; color:var(--muted); line-height:1.7;}
+.stays-lab{display:inline-block; margin-right:8px; font-size:11px; font-weight:700; letter-spacing:.12em; color:var(--faint);}
+/* flights */
+.fl-leg{margin:20px 0 8px; font-size:11.5px; font-weight:700; letter-spacing:.14em; color:var(--accent); text-transform:uppercase;}
+.fl-leg:first-child{margin-top:0;}
+.fl-row{display:grid; grid-template-columns:56px 1fr; column-gap:12px; padding:11px 0; border-top:1px solid var(--line);}
+.fl-row:first-child{border-top:none;}
+.fl-date{font-size:12px; font-weight:600; color:var(--muted); line-height:1.5; font-variant-numeric:tabular-nums;}
+.fl-main{min-width:0;}
+.fl-route{font-size:13.5px; font-weight:600; color:var(--ink); line-height:1.6;}
+.fl-dur{margin-left:6px; font-size:11.5px; font-weight:400; color:var(--faint);}
+.fl-meta{margin-top:4px; font-size:12.5px; color:var(--muted); line-height:1.65;}
+/* timeline */
+.stage{display:flex; align-items:baseline; gap:10px; margin:30px 0 16px;}
+.stage-no{font-size:13px; font-weight:700; color:#fff; background:var(--ink); width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center;}
+.stage-name{font-size:15px; font-weight:700; letter-spacing:.03em;}
+.tl{position:relative;}
+.tl-row{display:grid; grid-template-columns:62px 22px 1fr; column-gap:0; padding-bottom:22px;}
+.tl-row:last-child{padding-bottom:0;}
+.tl-date{font-size:12px; font-weight:600; color:var(--muted); text-align:right; padding-top:2px; line-height:1.3;}
+.tl-date span{display:block; font-weight:400; font-size:11px; color:var(--faint); margin-top:2px;}
+.tl-axis{position:relative;}
+.tl-axis::before{content:""; position:absolute; left:50%; top:6px; bottom:-22px; width:1px; background:var(--rule); transform:translateX(-50%);}
+.tl-row:last-child .tl-axis::before{display:none;}
+.dot{position:absolute; top:7px; left:50%; transform:translateX(-50%); width:11px; height:11px; border-radius:50%; background:var(--accent); border:2px solid var(--paper); box-shadow:0 0 0 1px var(--rule);}
+.cnt{background:var(--card); border:1px solid var(--line); padding:14px 15px;}
+.cnt-name{font-size:15.5px; font-weight:700; line-height:1.4; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);}
+.km{font-size:11.5px; letter-spacing:.06em; color:var(--accent); font-weight:600; margin-bottom:9px; text-transform:uppercase;}
+.row{display:grid; grid-template-columns:46px 1fr; gap:10px; padding:7px 0; border-top:1px dashed var(--line);}
+.row:first-child{border-top:none;}
+.lab{flex:none; font-size:11.5px; font-weight:700; letter-spacing:.08em; color:var(--muted); align-self:start; padding-top:1px;}
+.val{font-size:13.5px; color:#3a352d; line-height:1.65;}
+/* tickets table */
+table.tk{width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); font-size:13px;}
+table.tk th,table.tk td{padding:10px 11px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
+table.tk th{background:#f1efea; font-weight:700; font-size:12px; letter-spacing:.03em; border-bottom:2px solid var(--ink);}
+table.tk tr:last-child td{border-bottom:none;}
+table.tk td.price{white-space:nowrap; color:var(--ink); font-weight:600;}
+/* clothing */
+.cloth{background:var(--card); border:1px solid var(--line); padding:13px 15px; margin-bottom:1px;}
+.cloth-g{font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+.cloth-g .sq{width:8px; height:8px; background:var(--accent); display:inline-block; flex:none;}
+.cloth-it{font-size:13px; color:#3a352d; line-height:1.6;}
+/* tips */
+.tips{list-style:none; counter-reset:t;}
+.tips li{counter-increment:t; position:relative; padding:8px 0 8px 30px; font-size:13.5px; color:#3a352d; line-height:1.68; border-top:1px solid var(--line);}
+.tips li:first-child{border-top:none;}
+.tips li::before{content:counter(t,decimal-leading-zero); position:absolute; left:0; top:9px; font-size:11px; font-weight:700; color:var(--accent);}
+footer{margin-top:46px; padding-top:18px; border-top:1px solid var(--rule); font-size:11.5px; color:var(--faint); text-align:center; line-height:1.8;}
+/* visualization */
+.viz-grid{display:grid; grid-template-columns:1fr; gap:14px;}
+@media(min-width:560px){.viz-grid{grid-template-columns:1fr 1fr;}}
+.viz-card{background:var(--card); border:1px solid var(--line); padding:14px 15px; font-variant-numeric:tabular-nums;}
+.viz-card h4{font-size:13px; font-weight:700; margin-bottom:10px; letter-spacing:.02em;}
+.viz-card svg{display:block; width:100%; height:auto;}
+#toast{position:fixed; left:50%; bottom:calc(26px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px);
+  background:rgba(22,20,15,.94); color:#fff; font-size:13.5px; padding:10px 18px; opacity:0; pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease; z-index:9; white-space:nowrap;}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">JAPAN · 7 DAYS / 6 NIGHTS</div>
+    <h1>日本之旅<span class="l2">大阪进 · 东京出</span></h1>
+    <p class="lead">2026.10.6（周二）– 10.12（周一）· 两人同行 · 平价出行 · 公共交通为主</p>
+    <div class="route-line">厦门 → 上海转机 → 大阪 3 晚 → 新干线 → 东京 3 晚 → 分头返程</div>
+    <div class="stays"><span class="stays-lab">住宿</span>大阪中之岛东 ×3 晚 ｜ 三田花园日本桥 ×1 晚 ｜ 六本木雷姆 ×2 晚（已订）</div>
+  </header>
+
+  <div class="wechat-tip">微信内可能无法直接跳转高德：请先点右上角「···」→ 选择「在浏览器中打开」，再点下方按钮。</div>
+
+  <div class="cta">
+    <a class="btn-open" href="https://uri.amap.com/search?keyword=%E5%A4%A7%E9%98%AA&src=roadbook&coordinate=gaode&callnative=1">在高德地图中打开行程<span class="sub">自动唤起已安装的高德地图 App</span></a>
+    <div class="cta-note">手机需已安装「高德地图」App</div>
+  </div>
+
+  <section>
+    <div class="sec-title"><span class="no">01</span><span class="ttl">怎么在手机上打开</span></div>
+    <ol class="steps"><li>在<b>手机浏览器</b>（Safari / Chrome）中打开本页；微信内请先用「在浏览器中打开」。</li><li>点击上方按钮，<b>高德地图 App 会自动弹出</b>并生成行程路线图。</li><li>若没有反应，复制下面的链接，粘贴到手机浏览器地址栏打开。</li></ol>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">02</span><span class="ttl">行程链接（备用）</span></div>
+    <div class="copy-card">
+      <div class="link-box" id="linkBox">https://uri.amap.com/search?keyword=%E5%A4%A7%E9%98%AA&amp;src=roadbook&amp;coordinate=gaode&amp;callnative=1</div>
+      <button class="btn-copy" id="btnCopy" type="button">复制</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">03</span><span class="ttl">航班时间线</span></div>
+    <div class="fl-leg">去程</div>
+    <div class="fl-row"><div class="fl-date">10/6</div><div class="fl-main"><div class="fl-route">东航 MU5642 · 厦门高崎 T4 08:05 → 上海浦东 T1 10:10<span class="fl-dur">飞 2h5m</span></div><div class="fl-meta">两人 ｜ 中转 4h35m，先确认两段是否联程 / 行李直挂</div></div></div>
+    <div class="fl-row"><div class="fl-date">10/6</div><div class="fl-main"><div class="fl-route">上航 FM0821 · 浦东 T1 14:45 → 关西 T1 18:00<span class="fl-dur">飞 2h15m</span></div><div class="fl-meta">两人 ｜ 不直挂需取行李重新值机</div></div></div>
+    <div class="fl-leg">返程</div>
+    <div class="fl-row"><div class="fl-date">10/12</div><div class="fl-main"><div class="fl-route">厦航 MF0816 · 成田 T1 14:55 → 厦门高崎 T3 18:00<span class="fl-dur">飞 4h5m</span></div><div class="fl-meta">你 ｜ 行李按各人自理</div></div></div>
+    <div class="fl-row"><div class="fl-date">10/12</div><div class="fl-main"><div class="fl-route">国航 CA0422 · 羽田 T3 21:10 → 北京首都 T3 00:05+1<span class="fl-dur">飞 3h55m</span></div><div class="fl-meta">对象 ｜ 出发地不同，行程按双线排；落地为次日凌晨</div></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">04</span><span class="ttl">沿途天气速览</span></div>
+    <div class="weather-grid"><div class="wk"><div class="wk-city">OSAKA<small>D1–D3</small></div><div class="wk-t"><b>26°</b>/19°<span>秋高气爽<br>偶有雨</span></div></div><div class="wk"><div class="wk-city">TOKYO<small>D4–D6</small></div><div class="wk-t"><b>23°</b>/16°<span>早晚微凉<br>带薄外套</span></div></div><div class="wk"><div class="wk-city">USJ</div><div class="wk-t"><b>25°/19°</b><span>排队为主<br>防晒补水</span></div></div><div class="wk"><div class="wk-city">TYPHOON</div><div class="wk-t"><b>—</b><span>10 月偶有台风尾<br>关注航班动态</span></div></div></div>
+    <div class="src-note">10 月上旬同期气候参考，非实时预报；台风尾信息请以日本气象厅为准。</div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">05</span><span class="ttl">数据可视化</span></div>
+    <div class="viz-grid"><div class="viz-card"><h4>沿途气温区间（昼/夜）</h4><svg viewBox="0 0 720 210" style="width:100%;height:auto" role="img" aria-label="沿途气温区间"><line x1="38" y1="184.0" x2="682" y2="184.0" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="187.0" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">13°</text><line x1="38" y1="134.6" x2="682" y2="134.6" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="137.6" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">18°</text><line x1="38" y1="85.2" x2="682" y2="85.2" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="88.2" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">23°</text><line x1="38" y1="35.9" x2="682" y2="35.9" stroke="#cfccc3" stroke-width="0.8"/><text x="6" y="38.9" fill="#9a948a" font-size="10" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">28°</text><line x1="38.0" y1="55.6" x2="38.0" y2="124.8" stroke="#16140f" stroke-width="2.5"/><rect x="32.5" y="50.1" width="11" height="11" fill="#e0362b"/><text x="38.0" y="43.6" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">26°</text><text x="38.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">OSAKA</text><line x1="682.0" y1="85.2" x2="682.0" y2="154.4" stroke="#16140f" stroke-width="2.5"/><rect x="676.5" y="79.8" width="11" height="11" fill="#e0362b"/><text x="682.0" y="73.2" fill="#16140f" font-size="11" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">23°</text><text x="682.0" y="202" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">TOKYO</text></svg></div><div class="viz-card"><h4>路线示意（累计里程）</h4><svg viewBox="0 0 720 170" style="width:100%;height:auto" role="img" aria-label="路线示意"><line x1="30.0" y1="78" x2="80.9" y2="78" stroke="#16140f" stroke-width="2"/><text x="55.4" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">43 km · 0.5h</text><line x1="80.9" y1="78" x2="690.0" y2="78" stroke="#16140f" stroke-width="2"/><text x="385.4" y="96" fill="#6f6a60" font-size="10.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle" style="font-variant-numeric:tabular-nums">515 km · 2.5h</text><rect x="23.0" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="30.0" y="60" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">大阪</text><text x="30.0" y="73" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">D1 飞抵关西</text><rect x="73.9" y="71.0" width="14" height="14" fill="#16140f" rx="1"/><text x="80.9" y="118" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">京都</text><text x="80.9" y="131" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">D3 当日往返</text><rect x="683.0" y="71.0" width="14" height="14" fill="#e0362b" rx="1"/><text x="690.0" y="60" fill="#16140f" font-size="11.5" font-weight="700" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">东京</text><text x="690.0" y="73" fill="#9a948a" font-size="9.5" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" text-anchor="middle">D4 新干线</text></svg></div><div class="viz-card"><h4>预算构成（参考/估算）</h4><svg viewBox="0 0 720 92" style="width:100%;height:auto" role="img" aria-label="预算构成"><rect x="20.0" y="14" width="236.9" height="30" fill="#e0362b" rx="1"/><rect x="256.9" y="14" width="210.6" height="30" fill="#3a352d" rx="1"/><rect x="467.5" y="14" width="105.3" height="30" fill="#6f6a60" rx="1"/><rect x="572.8" y="14" width="70.2" height="30" fill="#9a948a" rx="1"/><rect x="643.0" y="14" width="57.0" height="30" fill="#cfccc3" rx="1"/><text x="20" y="86" fill="#9a948a" font-size="11" font-family="Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" style="font-variant-numeric:tabular-nums">合计约 15500 元（不含隐性支出）</text></svg><div style="margin-top:8px"><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#e0362b;display:inline-block"></span>住宿(6晚) 5400元 (35%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#3a352d;display:inline-block"></span>机票(2人往返) 4800元 (31%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#6f6a60;display:inline-block"></span>餐饮 2400元 (15%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#9a948a;display:inline-block"></span>新干线+市内交通 1600元 (10%)</span><span style="display:inline-flex;align-items:center;gap:6px;margin:4px 12px 0 0;font-size:11.5px;color:#6f6a60;font-family:Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"><span style="width:10px;height:10px;background:#cfccc3;display:inline-block"></span>USJ 门票 1300元 (8%)</span></div></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">06</span><span class="ttl">逐站路书</span></div>
+    <div class="stage"><span class="stage-no">01</span><span class="stage-name">全程 · 大阪 → 东京</span></div><div class="tl"><div class="tl-row"><div class="tl-date">10/6<span>出发</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">厦门 → 上海 → 大阪（关西）</div><div class="km">里程 · MU5642 + FM0821 · 飞行 4h20m + 中转 4h35m</div><div class="row"><span class="lab">天气</span><span class="val">大阪 26°/19°</span></div><div class="row"><span class="lab">景点</span><span class="val">关西机场 → 中之岛（南海电铁 + 地铁）</span></div><div class="row"><span class="lab">贴士</span><span class="val">中转 4h35m 先确认是否联程；不直挂要取行李重新值机。首日不排行程。</span></div></div></div><div class="tl-row"><div class="tl-date">10/7<span>全天</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">大阪市内</div><div class="km">里程 · 地铁为主</div><div class="row"><span class="lab">景点</span><span class="val">大阪城 · 道顿堀 · 心斋桥</span></div><div class="row"><span class="lab">美食</span><span class="val">章鱼烧 · 串炸 · 大阪烧</span></div><div class="row"><span class="lab">贴士</span><span class="val">大阪周游卡覆盖多数地铁与景点，按当天去的点数算是否划算。</span></div></div></div><div class="tl-row"><div class="tl-date">10/8<span>全天</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">USJ 环球影城</div><div class="km">里程 · 电车约 20min</div><div class="row"><span class="lab">景点</span><span class="val">任天堂世界 · 哈利波特园区</span></div><div class="row"><span class="lab">门票</span><span class="val">一日券 + 快速通行券（需提前买）</span></div><div class="row"><span class="lab">贴士</span><span class="val">开园前 30min 到闸口；快速通行券分项目档位，售完即止。</span></div></div></div><div class="tl-row"><div class="tl-date">10/9<span>上午</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">大阪 → 东京</div><div class="km">里程 · 新干线 515km · 约 2h30m</div><div class="row"><span class="lab">景点</span><span class="val">途中富士山侧（E 席靠右）</span></div><div class="row"><span class="lab">贴士</span><span class="val">大件行李需预约特大行李位；宿三田花园日本桥 1 晚。</span></div></div></div><div class="tl-row"><div class="tl-date">10/10<span>全天</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">东京 · 浅草上野</div><div class="km">里程 · 地铁为主</div><div class="row"><span class="lab">景点</span><span class="val">浅草寺 · 上野公园 · 银座</span></div></div></div><div class="tl-row"><div class="tl-date">10/11<span>全天</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">东京 · 涩谷新宿</div><div class="km">里程 · 地铁为主</div><div class="row"><span class="lab">景点</span><span class="val">明治神宫 · 涩谷十字路口 · 新宿御苑</span></div><div class="row"><span class="lab">贴士</span><span class="val">当晚换宿六本木雷姆，行李先寄存再出门。</span></div></div></div><div class="tl-row"><div class="tl-date">10/12<span>返程</span></div><div class="tl-axis"><span class="dot"></span></div><div class="cnt"><div class="cnt-name">东京 → 厦门 / 北京</div><div class="km">里程 · MF0816 / CA0422 · 飞行 4h5m / 3h55m</div><div class="row"><span class="lab">景点</span><span class="val">成田 T1（你）/ 羽田 T3（对象）</span></div><div class="row"><span class="lab">贴士</span><span class="val">两人分头走，行李分开打包；充电宝随身不托运。羽田段落地为次日凌晨。</span></div></div></div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">07</span><span class="ttl">门票与花费参考</span></div>
+    <table class="tk"><tr><th style="width:30%">景点/项目</th><th style="width:30%">票价参考</th><th>预约/说明</th></tr><tr><td>USJ 一日券</td><td class="price">以官网为准</td><td>官网提前购，旺季需指定日期</td></tr><tr><td>USJ 快速通行券</td><td class="price">以官网为准</td><td>分项目档位，售完即止</td></tr><tr><td>大阪周游卡</td><td class="price">以官网为准</td><td>按当天去的景点数算是否划算</td></tr></table>
+    <div class="src-note" style="margin-top:12px; color:#3a352d;">本样本门票价格未核实，一律写「以官网为准」；实际路书必须给查询日期与浮动提示。</div>
+    <div class="src-note">预算为示例值，单位人民币，未核实。</div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">08</span><span class="ttl">穿着建议</span></div>
+    <div class="cloth"><div class="cloth-g"><i class="sq"></i>城市日间（16–26℃）</div><div class="cloth-it">长袖 T 或薄针织 + 轻便长裤；薄外套备用。</div></div><div class="cloth"><div class="cloth-g"><i class="sq"></i>早晚与室内冷气（12–18℃）</div><div class="cloth-it">薄风衣或针织开衫；USJ 夜间排队久，加一件。</div></div><div class="cloth"><div class="cloth-g"><i class="sq"></i>雨备</div><div class="cloth-it">折叠伞（10 月上旬大阪偶雨）；防水鞋比伞更实用。</div></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="no">09</span><span class="ttl">注意事项</span></div>
+    <ul class="tips"><li>交通卡：Suica / ICOCA 互通，便利店与地铁都能用；新干线另购指定席。</li><li>USJ 提前买票并装官方 App，看实时排队再决定动线。</li><li>两人分头返程，行李分开打包；充电宝随身不托运。</li><li>10 月偶有台风尾，出发前 48h 再核对航班动态。</li><li>高德在境外没有路线规划能力，只能做地点检索；境外导航改用当地地图。</li></ul>
+  </section>
+
+  <footer>里程与价格为本样本的示例值，未核实<br>出境行程的航空段见「航班时间线」，路线图只画地面段</footer>
+</div>
+<div id="toast" role="status"></div>
+<script>
+(function(){
+  var btn=document.getElementById('btnCopy'),box=document.getElementById('linkBox'),toast=document.getElementById('toast'),timer=null;
+  function show(m){toast.textContent=m;toast.classList.add('show');if(timer)clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show');},1600);}
+  if(btn&&box){btn.addEventListener('click',function(){
+    var t=box.textContent.replace(/\s+/g,'');
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){show('已复制，去浏览器地址栏粘贴');},function(){fallback(t);});}
+    else{fallback(t);}
+  });}
+  function fallback(t){var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');show('已复制，去浏览器地址栏粘贴');}catch(e){show('请长按链接文本手动复制');}document.body.removeChild(ta);}
+})();
+</script>
+</body>
+</html>

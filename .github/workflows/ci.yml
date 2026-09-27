@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  gate:
+    name: Examples in sync + quality gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Examples in sync and passing the quality gate
+        # Re-renders every sample to a temp dir, diffs against the committed
+        # example, and runs scripts/check_quality.py on the fresh render.
+        # Zero deps — the renderer and the gate are stdlib-only.
+        run: python3 scripts/build_examples.py --check
+
+  layout:
+    name: Layout probe (no horizontal overflow)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Probe committed examples at phone widths
+        # A roadbook is opened on a phone. One grid column missing `min-width: 0`
+        # makes the whole page scroll sideways — the HTML stays perfectly valid,
+        # so check_quality.py cannot see it. This job can.
+        run: |
+          for f in examples/*.html; do
+            echo "--- $f"
+            node scripts/probe_layout.js "$f"
+          done
