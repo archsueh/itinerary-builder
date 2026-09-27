@@ -2,6 +2,58 @@
 
 > 变更记录。**向后兼容性单独标注**，因为本 skill 的产物是要交付给人的 HTML，静默改变渲染结果 = 静默改交付物。
 
+## 2026-09-27（晚）— 发布为 GitHub 仓库 + 修复生成物不可复现
+
+仓库上线：<https://github.com/archsueh/itinerary-builder>（MIT，public）。
+
+### 修复：入库的渲染成品依赖本机状态，换机器就复现不出来
+
+**症状**：本地 `build_examples.py --check` PASS，CI 上 4 个示例**全部**报「不同步」，
+且都从**第 163 行**起（SVG 图表区）不同。
+
+**根因**：`build_swiss.py` 用本机目录存在性决定渲染参数——
+
+```python
+ARCHVIZ = os.path.isdir(os.path.expanduser("~/.workbuddy-ai/skills/archviz-layout"))
+```
+
+本机装了 `archviz-layout` → `archviz=True`（柱状 `rx="1"`、发丝线 ≤0.8px）；
+CI runner 上没有 → 退化成 1px 兜底。于是**入库的生成物只在这一台机器上复现得出来**。
+
+**为什么这次才暴露**：以前 `examples/*.html` 不存在——渲染成品从没入过库，
+一直是「本机跑一次给人看」。这次为了让 clone 下来不跑任何东西就能浏览，
+把成品入了库并加了防漂移门禁，机器依赖才第一次变成可见问题。
+**这正是把生成物入库时最该防的事，CI 抓对了。**
+
+**修法**：加显式覆盖 `ROADBOOK_ARCHVIZ=1|0`，自动探测降级为兜底；
+`build_examples.py` 渲染时**钉死 `ROADBOOK_ARCHVIZ=1`**，让入库成品与机器无关。
+钉 `1` 而非 `0` 是为了与已发布的 `docs/screenshots/` 保持一致（截图是 archviz=True 下拍的）。
+
+**验证**：
+- `ROADBOOK_ARCHVIZ=0` 渲染 → 与已提交示例差 2 行，**恰好都在 `viz-grid` 内**，复现 CI 的失败签名；
+- 钉死后 `--check` PASS；`probe_layout.js` 四视口零溢出（CI 该 job 本次本就通过）。
+
+### 新增
+
+- `README.md` — 含四张全页截图、契约表、设计哲学、双门禁说明
+- `CONTRIBUTING.md`、`LICENSE`（MIT）、`.gitignore`、`.github/workflows/ci.yml`
+- `scripts/build_examples.py` — `--write` 重建 / `--check` 防漂移，本地与 CI 共用一条命令
+- `examples/*.html` — 4 份渲染成品（**生成物但入库**，供 clone 后直接浏览）
+- `docs/screenshots/` — 430px 视口 ×2x 截图（全页 + 首屏各 4 张）
+- `SKILL.md` frontmatter 补 `license: MIT` + `metadata.version` / `metadata.source`
+
+### CI
+
+两个 job：`gate`（示例同步 + 质量门禁，零依赖）、`layout`（Playwright 四视口布局探测）。
+首次运行 `layout` 通过、`gate` 失败——即上述机器依赖问题，已修复。
+
+### 隐私
+
+`assets/itinerary.team.sample.json` 使用**真实姓名与真实航班/酒店**（7 人），
+由当事人确认可公开。已在该样本 `_comment` 中显式标注，提醒复用者先自行匿名化。
+
+---
+
 ## 2026-09-27 — 出境/航班支持 + weather 契约放宽
 
 **动机**：从一张日本行程设计稿倒推对照，发现本 skill 有三处结构性缺口——① 航班没有归属字段；

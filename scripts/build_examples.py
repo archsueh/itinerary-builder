@@ -45,12 +45,20 @@ MAPPING = [
 # If that ever stops being true, compare a normalised form here instead.
 _STYLE_RE = re.compile(r"<style>.*?</style>", re.S)
 
+# Pin the archviz hook. `build_swiss.py` otherwise auto-detects
+# ~/.workbuddy-ai/skills/archviz-layout, which makes its output depend on
+# machine-local state — and a committed artifact that only reproduces on one
+# machine is worse than no artifact. CI caught exactly this: every example
+# diverged from line 163 (the SVG charts) on a runner without the skill.
+# Pinning to "1" also keeps the examples matching docs/screenshots/.
+RENDER_ENV = dict(os.environ, ROADBOOK_ARCHVIZ="1")
+
 
 def render(sample, out):
     r = subprocess.run(
         [sys.executable, os.path.join(ROOT, "scripts", "build_swiss.py"),
          os.path.join(ROOT, sample), out],
-        capture_output=True, text=True, cwd=ROOT,
+        capture_output=True, text=True, cwd=ROOT, env=RENDER_ENV,
     )
     if r.returncode != 0:
         raise RuntimeError("render failed for %s:\n%s" % (sample, r.stderr.strip()))

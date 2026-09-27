@@ -27,7 +27,18 @@ except Exception:
 # archviz-layout hook: when installed, adopt its Type D (嵌入式数据可视化) +
 # Swiss dual-track discipline on the inline SVG charts (rx=1 bars, hairline
 # <=0.8px, tabular-nums, single accent). Parent palette (roadbook red) is kept.
-ARCHVIZ = os.path.isdir(os.path.expanduser("~/.workbuddy-ai/skills/archviz-layout"))
+#
+# 自动探测会让输出**依赖本机是否装了 archviz-layout**。对交互式使用这没问题，
+# 但本仓库把渲染成品 `examples/*.html` 入了库——生成物一旦依赖机器本地状态，
+# 换台机器（或 CI）就复现不出来，防漂移门禁会误报不同步。
+# 所以留一个显式覆盖：ROADBOOK_ARCHVIZ=1|0。build_examples.py 钉死它。
+_override = os.environ.get("ROADBOOK_ARCHVIZ", "").strip().lower()
+if _override in ("1", "true", "yes", "on"):
+    ARCHVIZ = True
+elif _override in ("0", "false", "no", "off"):
+    ARCHVIZ = False
+else:
+    ARCHVIZ = os.path.isdir(os.path.expanduser("~/.workbuddy-ai/skills/archviz-layout"))
 
 if len(sys.argv) < 2:
     print("usage: build_swiss.py <roadbook.json> [output.html]")

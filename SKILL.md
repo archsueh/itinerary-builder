@@ -235,6 +235,11 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 
 不存在时仍按相同瑞士令牌渲染（发丝线略粗 1px 兜底）。详见 `references/design-language.md` §7。
 
+> ⚠️ **自动探测会让输出依赖本机状态**。交互式使用没问题，但**入库的渲染成品必须钉死**：
+> 用 `ROADBOOK_ARCHVIZ=1|0` 显式覆盖（`scripts/build_examples.py` 已钉 `1`）。
+> 曾因这个踩坑：本机装了 archviz-layout、CI 没装，入库的 4 个示例在 CI 上**全部**报不同步。
+> 生成物一旦依赖机器本地状态，换台机器就复现不出来。
+
 **展板级重路径**：用户要「出图版 / 可导出 PNG」时，把 `viz` 数据交给 `archviz-diagram`（启用 host-palette 沿用路书红），产出独立图表页，而非塞进手机路书。
 
 ## 6. 自检 + 交付
