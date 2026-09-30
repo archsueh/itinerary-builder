@@ -33,6 +33,10 @@ metadata:
 **必须问清一件事：所有人是否同进同出？** 只要有人先返、有人多留、有人中途换城市，
 就按**多人并行**处理（见 §5 泳道图）——这类行程用单线路线图会直接画错。
 
+**日期一旦确认，同步过一遍预订节奏**（`references/booking-and-budget.md`）：
+签证与护照是**硬期限**（护照有效期须 ≥ 返程日 +6 个月；复杂签证要留 90 天以上，瓶颈在预约排期），
+**来不及就先说，不要等排完行程才发现办不下来**。与本次行程相关的节点写进 `tips[]`。
+
 ## 2. 核实——不能跳过
 
 - 逐段核实里程与耗时。**没有高德 MCP 时用公开路况估算，并显式标注「非高德实测」**（实测低估是常态）。
@@ -221,6 +225,7 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 | `huashu-md-html` | **已安装** | 可走 md→HTML 出版级管线（默认中文衬线；要包豪斯需改 sans） |
 | `guizang-ppt-skill` | **失效**（3 节点循环软链，无任何可加载内容） | 无法嵌套 |
 | `pandoc` | **未安装**（brew 大概率被代理拦） | 文章流路线不可用；兜底重皮纯标准库，不依赖 |
+| `travel-planning`（市场装） | **已退役**（2026-09-30） | 与本 skill 触发词冲突；其预订/预算知识已并入 `references/booking-and-budget.md`。**不要再装回来** |
 
 **结论**：默认走**自带兜底重皮**（`scripts/build_swiss.py`，零依赖）。`archviz-layout` 已装 → 图表自动套用 Type D 纪律；不要因为没装 pandoc 就去装。
 
@@ -267,6 +272,7 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 | `assets/itinerary.team.sample.json` | **团队样本**：7 人 × 11 天，核心是 `viz.swimlane` 泳道图 |
 | `assets/itinerary.flight.sample.json` | **出境样本**：大阪进东京出 7 天 6 晚，演示 `route_line` / `stays[]` / `flights[]` 三新字段 + 非城市天气格（`USJ`/`TYPHOON`） |
 | `references/planning-rules.md` | 行程合理性质疑规则（§1–§11）。**规划阶段必读** |
+| `references/booking-and-budget.md` | 预订节奏、省钱战术、签证/保险提前量、多城市衔接。**日期确认后必读** |
 | `references/roadbook-spec.md` | JSON 字段与渲染口径、交付流程。**每次产出必读** |
 | `references/design-language.md` | 瑞士/包豪斯设计令牌 + 反 slop 清单 + 字段映射 + 可视化细则 |
 | `references/amap-tools.md` | 高德 MCP 参数与调用顺序（现场补数据时用） |

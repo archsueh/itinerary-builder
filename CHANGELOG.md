@@ -2,6 +2,59 @@
 
 > 变更记录。**向后兼容性单独标注**，因为本 skill 的产物是要交付给人的 HTML，静默改变渲染结果 = 静默改交付物。
 
+## 2026-09-30 — 吸收第三方 `travel-planning` 的预订/预算知识（纯文档）
+
+### 背景
+
+本机从市场装了第三方 skill `travel-planning` v1.0.1（`~/.workbuddy-ai/skills/travel-planning/`，
+`source=marketplace`），与本 skill 在「规划旅行」触发词上冲突。逐项比对后判定**两者不是同类**：
+
+| | `travel-planning` | 本 skill |
+|---|---|---|
+| 本质 | 行程**管理器**（长期记忆 + 行前提醒 + 清单） | 行程**构建器 + 渲染器** |
+| 产出 | markdown 文件，存 `~/travel-planning/` | 单文件 HTML 路书 |
+| 代码 | 无（纯 md 指令） | 5 个脚本 + CI |
+
+**决策：不合并。** 理由是形态不同（管家 vs 设计师，塞进一个 skill 违反「按能力命名」），
+且它是第三方（有 `installedContentHash`，改动会被市场更新覆盖）。
+**改为吸收其事务层知识后退役该 skill。**
+
+### 新增
+
+- `references/booking-and-budget.md` — 预订节奏与预算优化（7 节）：
+  行前倒计时（T-90/60/45/30/14/7）、预订时机窗口、平季与旺季、省钱战术、
+  签证与保险提前量、多城市与跨境衔接、出行前确认清单。
+
+### 变更
+
+- `SKILL.md` §1 末尾加一段：**日期确认后同步过一遍预订节奏**，把签证/护照作为硬期限前置检查
+  （护照有效期 ≥ 返程日 +6 个月；复杂签证留 90 天以上）。
+- `SKILL.md` 资产表 +1 行。
+- `SKILL.md`「环境事实」表 +1 行：记录 `travel-planning` 已退役，避免以后重复排查/装回。
+
+### 本土化改写（非照搬）
+
+原 skill 是欧美视角，本文件全部重写：
+
+- 「复杂签证」例子由「中国、俄罗斯、印度」改为**申根/美/英/加/澳**——对中文用户，中国签证不是问题；
+- 「平季」由 Europe / Asia / Americas 三段改为**中国语境**（4–5 月、9–10 月）；
+- 旺季由「Christmas / Golden Week」改为**春节 / 国庆 / 暑假**；
+- 支付建议改按**出境人民币用户**的实际顺序（先换 20% → 当地 ATM → 免货转卡）。
+- 另补原 skill 概览未提、但在其 `multi-city.md` 里的两条：**多城市最小停留规则**、**开口程机票**。
+
+### 不吸收
+
+长期记忆（`~/travel-planning/memory.md`）、打包清单模板、预算分类表模板、`travelers.md`。
+前三者本 skill 已有替代（`tips[]` / `clothing[]` / `viz.budget[]`）；
+长期记忆与「一次性交付一页路书」的定位冲突，属**刻意放弃**。
+
+### 向后兼容性 ✅
+
+**未触碰渲染器、契约、样本。** `build_swiss.py` / `build_viz.py` / `check_quality.py` 零改动，
+`examples/*.html` 不需重建。本次是纯新增文档 + `SKILL.md` 文字。
+
+---
+
 ## 2026-09-27（晚）— 发布为 GitHub 仓库 + 修复生成物不可复现
 
 仓库上线：<https://github.com/archsueh/itinerary-builder>（MIT，public）。
