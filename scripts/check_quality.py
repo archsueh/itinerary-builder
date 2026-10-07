@@ -8,6 +8,12 @@ Checks (all must pass; exit 1 on any FAIL):
   3. at least one inline-SVG chart rendered   (viz block present in JSON?)
   4. no AI-slop CSS patterns     (purple gradient / neon / #0D1117 dark bg)
   5. no data-attribute injection noise  (e.g. data-page-node-id)
+  6. no duplicate id             (dup id = 元素/锚点互踩，导航与 JS 取错节点)
+  7. no template placeholder residue    (TODO / __CITY__ / 【目的地】 / Lorem / FIXME)
+  8. no long 【】 authoring instruction left in   (【…】≥15 字 = 填稿指引未删)
+
+6–8 借鉴自 awangwang123/jianhao-travel-planner 的 tools/checklist.py（MIT），
+只取检查项思路，代码自写（其骨架/指纹/navLock/存储键等项与本 skill 架构无关，不搬）。
 
 Why Python and not grep/rg: this machine has NO ripgrep, and macOS BSD grep
 rejects both `\\x{...}` and `\\|` alternation — the old `grep -nE '[\\x{1F000}-...]'`
@@ -85,6 +91,28 @@ def main(path):
     print("[%s] 注入属性噪声：%d 处" % ("FAIL" if noise else "OK", noise))
     if noise:
         fails.append("attr-noise")
+
+    # 6) duplicate id — 重复 id 会让锚点跳错、JS 取到第一个节点
+    ids = re.findall(r'id="([A-Za-z_-][\w-]*)"', s)
+    dup = sorted({x for x in ids if ids.count(x) > 1})
+    print("[%s] id 唯一：%d 个 id，重复 %d %s" % (
+        "FAIL" if dup else "OK", len(ids), len(dup), dup[:5]))
+    if dup:
+        fails.append("dup-id")
+
+    # 7) template placeholder residue
+    ph = {k: s.count(k) for k in ("TODO", "FIXME", "__CITY__", "【目的地】", "Lorem") if s.count(k)}
+    print("[%s] 占位符残留：%s" % ("FAIL" if ph else "OK", ph or "无"))
+    if ph:
+        fails.append("placeholder")
+
+    # 8) long 【】 = authoring instruction left in.
+    #    【估算】【未核实】这类短标注是合法产物，故只拦 ≥15 字的长【】。
+    lb = re.findall(r"【[^】]{15,}】", s)
+    print("[%s] 长【】指引残留：%d 处 %s" % (
+        "FAIL" if lb else "OK", len(lb), lb[0][:24] + "…" if lb else ""))
+    if lb:
+        fails.append("bracket-instruction")
 
     print()
     if fails:
