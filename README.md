@@ -62,6 +62,9 @@ python3 scripts/check_quality.py <输出.html>
 
 # 门禁 2：布局（320/375/430/768 四个视口查横向溢出，需 Node + Playwright）
 node scripts/probe_layout.js <输出.html>
+# 若 playwright 已装在别处，用 NODE_PATH 指过去即可，不必重装：
+#   NODE_PATH=<path/to/node_modules> node scripts/probe_layout.js <输出.html>
+# 退出码：1 = 有溢出，2 = 加载不到 playwright（NODE_PATH 未设），3 = 用法错误 / 未预期错误
 
 # 示例与样本的防漂移校验
 python3 scripts/build_examples.py --check     # CI 用

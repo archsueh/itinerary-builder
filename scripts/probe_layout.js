@@ -11,15 +11,43 @@
  * 会**假性裁切**（右侧内容看似被切、还出现一条红色竖线），但页面其实没有溢出。
  * 实测过的坑：差点把截图口径问题误报成布局 bug。所以这里直接量 DOM。
  *
- * 用法：
+ * 用法（本机手动跑）：
+ *   NODE=$(cat /Users/mac/.workbuddy-ai/binaries/node/versions/current)
  *   NODE_PATH=/Users/mac/.workbuddy-ai/binaries/node/workspace/node_modules \
- *   /Users/mac/.workbuddy-ai/binaries/node/versions/22.22.2-3/bin/node \
+ *   /Users/mac/.workbuddy-ai/binaries/node/versions/$NODE/bin/node \
  *   scripts/probe_layout.js <输出.html> [视口宽度...]
  *
- * 退出码：0 = 全部视口无溢出；1 = 有溢出（列出越界元素）
+ *   ⚠️ node 版本目录名会变（托管运行时重装时会升后缀，实测 22.22.2-3 → 22.22.2-6），
+ *   **不要写死版本号**，一律经 `versions/current` 解析，否则会报
+ *   `no such file or directory: .../bin/node`，看起来像脚本坏了、其实是路径过期。
+ *   CI 里不需要这些：workflow 用 actions/setup-node 提供裸 `node`。
+ *
+ * 退出码：0 = 全部视口无溢出
+ *         1 = 有溢出（列出越界元素）
+ *         2 = 环境缺 playwright（NODE_PATH 未设，或本机未安装）—— **不是脚本坏了**
+ *         3 = 用法错误 / 未预期错误（崩溃）
  */
 const path = require('path');
-const { chromium } = require('playwright');
+
+let chromium;
+try {
+  ({ chromium } = require('playwright'));
+} catch (e) {
+  if (e && e.code === 'MODULE_NOT_FOUND') {
+    console.error('[环境错误] 加载不到 playwright —— 不是脚本坏了，是 NODE_PATH 没设。');
+    console.error('');
+    console.error('  本机跑法（注意 node 版本目录要经 versions/current 解析，别写死）：');
+    console.error('    NODE=$(cat /Users/mac/.workbuddy-ai/binaries/node/versions/current)');
+    console.error('    NODE_PATH=/Users/mac/.workbuddy-ai/binaries/node/workspace/node_modules \\');
+    console.error('      /Users/mac/.workbuddy-ai/binaries/node/versions/$NODE/bin/node \\');
+    console.error('      scripts/probe_layout.js examples/01-selfdrive-chengdu-daocheng.html');
+    console.error('');
+    console.error('  未安装 playwright 时：');
+    console.error('    cd /Users/mac/.workbuddy-ai/binaries/node/workspace && npm install playwright');
+    process.exit(2);
+  }
+  throw e;
+}
 
 const WIDTHS = process.argv.slice(3).map(Number).filter(Boolean);
 const VIEWPORTS = WIDTHS.length ? WIDTHS : [320, 375, 430, 768];
@@ -28,7 +56,7 @@ async function main() {
   const file = process.argv[2];
   if (!file) {
     console.error('用法: probe_layout.js <输出.html> [视口宽度...]');
-    process.exit(2);
+    process.exit(3);
   }
   const url = 'file://' + path.resolve(file);
 
@@ -50,7 +78,10 @@ async function main() {
         if (rect.right > doc.clientWidth + 1) {
           offenders.push({
             tag: el.tagName.toLowerCase(),
-            cls: String(el.className || '').slice(0, 46),
+            // 必须用 getAttribute：SVG 元素的 `className` 是 SVGAnimatedString 对象，
+            // `String(el.className)` 会打印成 `[object SVGAnimatedString]`，
+            // 而本 skill 的图表全是 inline SVG —— 越界元素多半正是它们，诊断信息会全废。
+            cls: (el.getAttribute('class') || '').slice(0, 46),
             right: Math.round(rect.right),
             w: Math.round(rect.width),
             text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 34),
@@ -99,5 +130,7 @@ async function main() {
 
 main().catch((e) => {
   console.error(e);
-  process.exit(2);
+  // 3 而非 2：2 已被「缺 playwright」占用，崩溃与环境缺依赖必须能分辨，
+  // 否则 CI 日志会把脚本 bug 读成「环境没配好」。
+  process.exit(3);
 });

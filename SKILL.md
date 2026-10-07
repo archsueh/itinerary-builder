@@ -285,7 +285,19 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
   人工复核项（门禁不覆盖）：朱红 `#e0362b` 唯一强调、`line-height ≥ 1.7`、`max-width ≤ 820px`。
 - **fail-closed**：任何 FAIL **不许交付**，修复后重跑；**任何未执行的检查必须向用户显式声明**——「没跑」不等于「通过」。
   门禁因缺依赖等原因跑不了时，说清哪几项没跑，不要默认放行。
-- **再跑布局体检**：`node scripts/probe_layout.js <输出.html>`，在 320/375/430/768 四个视口查横向溢出。
+- **再跑布局体检**：**本机必须带 `NODE_PATH`**（裸 `node` 解析到托管运行时，但**加载不到 playwright**，
+  直接跑会报 `MODULE_NOT_FOUND`——那是环境变量没设，不是脚本坏了）：
+
+  ```bash
+  NODE=$(cat /Users/mac/.workbuddy-ai/binaries/node/versions/current)
+  NODE_PATH=/Users/mac/.workbuddy-ai/binaries/node/workspace/node_modules \
+    /Users/mac/.workbuddy-ai/binaries/node/versions/$NODE/bin/node \
+    scripts/probe_layout.js <输出.html>
+  ```
+
+  ⚠️ **node 版本目录名会变**（托管运行时重装时升后缀，实测 `22.22.2-3` → `22.22.2-6`），
+  一律经 `versions/current` 解析，**不要写死版本号**。
+  在 320/375/430/768 四个视口查横向溢出。
   路书是在手机上打开的，**一个没加 `min-width:0` 的 grid 或一处 `white-space:nowrap` 就会让整页左右能拖**——
   在手机上表现为「右边被切掉」，而 HTML 本身完全合法，`check_quality.py` 查不出来。
   失败时脚本会列出越界元素的 tag / class / 文字，直接照着定位。
@@ -313,7 +325,7 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 | `scripts/build_swiss.py` | JSON → 包豪斯精装版 HTML（纯标准库、零依赖；自动检测 archviz-layout） |
 | `scripts/build_viz.py` | JSON → 内嵌 inline SVG 图表（气温/路线/预算/海拔/泳道），零依赖 |
 | `scripts/check_quality.py` | 产出质量门禁（8 项），纯标准库，退出码 1 = 未通过 |
-| `scripts/probe_layout.js` | 布局体检：4 个视口查横向溢出（需 playwright，本机已装）。退出码 1 = 有溢出 |
+| `scripts/probe_layout.js` | 布局体检：4 个视口查横向溢出（需 playwright）。退出码 1 = 有溢出，**2 = 缺 playwright（`NODE_PATH` 没设）**，3 = 用法错误 / 崩溃。本机调法见 §6 |
 | `scripts/build_examples.py` | 示例重建（`--write`）与防漂移校验（`--check`，CI 用）。**改了样本或渲染器就跑 `--write` 并提交** |
 | `examples/*.html` | 4 份渲染成品（**生成物但入库**，供 clone 后直接浏览）。**不要手改** |
 | `docs/screenshots/` | 示例截图（430px 视口 ×2x） |

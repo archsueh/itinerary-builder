@@ -2,6 +2,64 @@
 
 > 变更记录。**向后兼容性单独标注**，因为本 skill 的产物是要交付给人的 HTML，静默改变渲染结果 = 静默改交付物。
 
+## 2026-10-07（补）— 修复 `probe_layout.js` 的本机调用路径、缺依赖报错与 SVG 诊断
+
+### 向后兼容性
+
+**产物零影响**：不改渲染器、不改数据契约、不改任何 `examples/*.html` 的字节。
+仅动 `scripts/probe_layout.js` 的依赖加载、诊断输出与文档，以及 `SKILL.md` / `README.md` 的调用说明。
+**唯一对外契约变化是退出码**：新增 `3`（用法错误 / 崩溃），原先归入 `2` 的这两种情况改判 `3`；
+CI 只判「非零即失败」，不受影响。
+
+### 问题（本次实跑复现，非推断）
+
+1. `scripts/probe_layout.js` 文档头**写死了**
+   `/Users/mac/.workbuddy-ai/binaries/node/versions/22.22.2-3/bin/node`。
+   **该路径已失效** —— 托管运行时重装时版本后缀会升（实测 `22.22.2-3` → `22.22.2-6`）。
+   照着文档跑会报 `no such file or directory: .../bin/node`，看起来像脚本坏了。
+2. `SKILL.md` / `README.md` 给的是裸 `node scripts/probe_layout.js`。
+   本机裸 `node` 确实能解析到托管运行时，但**加载不到 playwright** → `MODULE_NOT_FOUND`。
+   **这个报错极具误导性：看起来像环境缺依赖，实际是命令少了 `NODE_PATH`。**
+   （上一轮就是在这里被绊住的，当时误判为「自己调用错了」，真因是文档给的命令在本机跑不通。）
+3. 越界元素列表**对 SVG 元素完全失效**：用 `String(el.className)` 取 class，
+   SVG 的 `className` 是 `SVGAnimatedString` **对象** → 打印成 `[object SVGAnimatedString]`。
+   本 skill 的图表全是 inline SVG，越界元素多半正是它们 → **诊断信息在最需要时全废**。
+   只在**有溢出时**才可见，所以正例（4 个示例全 PASS）永远暴露不出来。
+
+### 变更
+
+- `scripts/probe_layout.js`
+  - 文档头改用 `versions/current` 解析版本目录，并注明**不要写死版本号**及其原因。
+  - 新增 **fail-closed 依赖守卫**：`require('playwright')` 失败且 `code === 'MODULE_NOT_FOUND'` 时，
+    打印「不是脚本坏了，是 NODE_PATH 没设」+ 本机正确命令 + 安装命令，**退出码 2**；其他异常照旧抛出。
+  - **修 `[object SVGAnimatedString]`**：越界元素列表原用 `String(el.className)` 取 class，
+    SVG 元素的 `className` 是 `SVGAnimatedString` **对象**，打印出来是一坨 `[object SVGAnimatedString]`。
+    而本 skill 的图表**全是 inline SVG**——越界元素多半正是它们，等于诊断信息在最需要时全废。
+    改用 `el.getAttribute('class')`（HTML/SVG 通吃）。**是在给本批次造溢出负例时暴露的**，
+    正例（无溢出）永远看不到。
+  - 退出码 `2` 与「用法错误 / 崩溃」解耦：后两者改判 **3**。原脚本把两者都记为 2，
+    加上本批次把 2 定义成「缺 playwright」后，CI 日志会把脚本 bug 读成「环境没配好」。
+- `SKILL.md` §6 给出本机精确调法（`versions/current` + `NODE_PATH`）；§资产表补退出码 2、3 的含义。
+- `README.md` 命令块补 `NODE_PATH` 兜底写法与退出码说明（保持对外可移植，**不写死本机路径**）。
+
+### 退出码约定（新增）
+
+| 码 | 含义 |
+|---|---|
+| 0 | 全部视口无横向溢出 |
+| 1 | 有溢出（列出越界元素） |
+| **2** | **加载不到 playwright（`NODE_PATH` 未设，或本机未安装）** |
+| **3** | **用法错误 / 未预期错误（崩溃）** |
+
+### 验证
+
+- `build_examples.py --check` → **4/4 同步且过门禁**
+- `probe_layout.js` → **4 示例 × 4 视口全 PASS**
+- 守卫**正负例双向验证**：不设 `NODE_PATH` → `rc=2` + 可操作提示；设了 → `rc=0`
+- **退出码三态实测**：无 `NODE_PATH` → `2`；无参数 → `3`；人为 `nowrap` 溢出页 → `1`；正常示例 → `0`
+- **SVG 诊断修复实测**：溢出页越界元素从 `class="[object SVGAnimatedString]"` 变为真实 class / 空串
+- `node --check scripts/probe_layout.js`、`ast.parse(check_quality.py)` 语法通过
+
 ## 2026-10-07 — 借鉴 `jianhao-travel-planner`：门禁 +3 项、实查纪律 +4 条、速查卡前置
 
 ### 来源与合规
