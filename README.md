@@ -57,7 +57,7 @@ ln -s "$PWD/itinerary-builder" ~/.workbuddy-ai/skills/itinerary-builder
 python3 scripts/build_swiss.py <data.json> [输出.html]
 # 不传输出 → 输入同目录、同名加 "-精装.html"
 
-# 门禁 1：文本质量（emoji / 越界外链 / 图表 / AI-slop / 注入噪声）
+# 门禁 1：文本质量（emoji / 越界外链 / 图表 / AI-slop / 注入噪声 / 重复 id / 占位符 / 长【】 / 刻度叠字）
 python3 scripts/check_quality.py <输出.html>
 
 # 门禁 2：布局（320/375/430/768 四个视口查横向溢出，需 Node + Playwright）
@@ -173,8 +173,8 @@ python3 scripts/build_examples.py --write     # 改完样本后重建
 
 | 门禁 | 查什么 | 退出码 |
 |---|---|---|
-| `scripts/check_quality.py` | emoji 残留、越界外链（应只有高德）、至少一张 SVG、AI-slop 样式（紫渐变/霓虹/`#0D1117`）、注入属性噪声 | 1 = 未过 |
-| `scripts/probe_layout.js` | 320/375/430/768 四个视口的横向溢出，失败时列出越界元素的 tag/class/文字 | 1 = 有溢出 |
+| `scripts/check_quality.py` | 九项：emoji 残留、越界外链（应只有高德）、至少一张 SVG、AI-slop 样式（紫渐变/霓虹/`#0D1117`）、注入属性噪声、重复 id、占位符残留、长【】指引残留、y 轴刻度叠字 | 1 = 未过 |
+| `scripts/probe_layout.js` | 320/375/430/768 四个视口的横向溢出，失败时列出越界元素的 tag/class/文字 | 1 = 有溢出，2 = 缺 playwright，3 = 用法错误/崩溃 |
 
 **为什么需要第二道**：路书是在手机上打开的，一个没加 `min-width: 0` 的 grid 或一处 `white-space: nowrap` 就会让整页左右能拖——在手机上表现为「右边被切掉」，而 **HTML 本身完全合法**，第一道门禁查不出来。
 

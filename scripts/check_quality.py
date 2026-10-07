@@ -11,6 +11,7 @@ Checks (all must pass; exit 1 on any FAIL):
   6. no duplicate id             (dup id = 元素/锚点互踩，导航与 JS 取错节点)
   7. no template placeholder residue    (TODO / __CITY__ / 【目的地】 / Lorem / FIXME)
   8. no long 【】 authoring instruction left in   (【…】≥15 字 = 填稿指引未删)
+  9. y-axis ticks not colliding   (相邻刻度像素间距 ≥ 20px — 见 build_viz.py _y_gridlines)
 
 6–8 借鉴自 awangwang123/jianhao-travel-planner 的 tools/checklist.py（MIT），
 只取检查项思路，代码自写（其骨架/指纹/navLock/存储键等项与本 skill 架构无关，不搬）。
@@ -41,6 +42,11 @@ SLOP_PATTERNS = (
     ("霓虹/发光", re.compile(r"(neon|glow|text-shadow:\s*0\s+0\s+\d+px)", re.I)),
     ("暗底 #0D1117", re.compile(r"#0d1117", re.I)),
 )
+
+# y 轴刻度标签：左侧留白区（x<40）里、内容是「数字 + m 或 °」的 <text>。
+# 只有气温图（x=6）与海拔剖面（x=4）会产出这种节点。
+AXIS_TICK = re.compile(r'<text x="(\d+)" y="([\d.]+)"[^>]*>-?[\d.]+[m°]</text>')
+MIN_AXIS_GAP_PX = 20
 
 
 def main(path):
@@ -113,6 +119,23 @@ def main(path):
         "FAIL" if lb else "OK", len(lb), lb[0][:24] + "…" if lb else ""))
     if lb:
         fails.append("bracket-instruction")
+
+    # 9) y 轴刻度叠字 —— 相邻刻度的像素间距。
+    #    刻度条数必须由**可用高度**推出来，不能写死步长：成都→稻城海拔跨 3.6km，
+    #    写死 200m 就会在 152px 里塞 19 条刻度、间距 8.4px，10px 的字直接叠死
+    #    （2026-10-07 实测，修复见 build_viz.py `_y_gridlines`）。
+    tight = []
+    for svg in re.findall(r'<svg\b.*?</svg>', s, re.S):
+        ys = sorted(float(m.group(2)) for m in AXIS_TICK.finditer(svg) if int(m.group(1)) < 40)
+        gaps = [ys[i + 1] - ys[i] for i in range(len(ys) - 1)]
+        if gaps and min(gaps) < MIN_AXIS_GAP_PX:
+            tight.append(min(gaps))
+    print("[%s] y 轴刻度间距：%s" % (
+        "FAIL" if tight else "OK",
+        ("最小 %.1fpx < %dpx → 叠字" % (min(tight), MIN_AXIS_GAP_PX)) if tight
+        else "≥ %dpx" % MIN_AXIS_GAP_PX))
+    if tight:
+        fails.append("axis-tick-gap")
 
     print()
     if fails:

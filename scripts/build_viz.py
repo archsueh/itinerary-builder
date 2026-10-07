@@ -60,6 +60,7 @@ Reuse & extraction policy (decided 2026-09-24 — DO NOT split yet):
   `scrollytelling-html`) and make this skill depend on it optionally.
 """
 import html
+import math
 
 # ---- design tokens (match the roadbook HTML CSS) ----
 INK = "#16140f"
@@ -83,6 +84,53 @@ def _esc(s):
 def _tnum(s):
     """wrap numeric text in a tabular-nums style (archviz Type D alignment)."""
     return ' style="font-variant-numeric:tabular-nums"'
+
+
+# 相邻两条 y 刻度线的最小间距。10px 字号 + 呼吸空间；低于这个数刻度就开始糊成一片。
+MIN_TICK_GAP_PX = 22
+
+
+def _axis_num(v):
+    """刻度文字：整数不带小数点（1000 而非 1000.0）。
+
+    不用 `%g`：它超过 6 位有效数字会切成科学计数法（1000000 → 1e+06），
+    刻度轴上那是灾难。
+    """
+    return str(int(round(v))) if abs(v - round(v)) < 1e-9 else ("%.1f" % v)
+
+
+def _nice_step(span, target):
+    """挑一个「圆整」的步长，使 span 内最多放得下 target 条刻度。
+
+    阶梯取 1 / 2 / 5 × 10^n。**刻意不含 2.5** —— 它会产出 25、250 这类步长，
+    而刻度轴的全部意义就是「扫一眼能读」，不整的数等于白画。
+    """
+    if span <= 0:
+        return 1
+    mag = 10 ** math.floor(math.log10(span / target))
+    for mult in (1, 2, 5, 10):
+        if span / (mag * mult) <= target:
+            return mag * mult
+    return mag * 10
+
+
+def _y_gridlines(lo, hi, plot_h):
+    """[lo, hi] 内的 y 刻度值，对齐到步长的整数倍。
+
+    为什么要对齐到整数倍：刻度轴要能扫读。旧代码从 `int(mmin)` 起步 ——
+    那是数据派生的任意值，于是轴上是 1050 / 2050 / 3050 这种读不出规律的数字。
+
+    为什么要按高度定条数：**旧代码把步长写死（海拔 200m、气温 5°），
+    与数据跨度无关** —— 成都→稻城海拔跨 3.6km，就在 152px 里塞了 19 条刻度、
+    间距 8.4px，10px 的字直接叠在一起（2026-10-07 实测）。
+    """
+    target = max(2, int(plot_h / MIN_TICK_GAP_PX))
+    step = _nice_step(hi - lo, target)
+    vals, v = [], math.ceil(lo / step) * step
+    while v <= hi + 1e-9:
+        vals.append(v)
+        v += step
+    return vals
 
 
 def _num(v):
@@ -120,10 +168,10 @@ def temp_chart(weather, archviz=False):
         return H - pad_y - (t - tmin) / (tmax - tmin) * (H - 2 * pad_y)
 
     grid = ""
-    for g in range(int(tmin), int(tmax) + 1, 5):
+    for g in _y_gridlines(tmin, tmax, H - 2 * pad_y):
         yy = y(g)
         grid += '<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="%s" stroke-width="%.1f"/>' % (pad_x, yy, W - pad_x, yy, LINE, hw)
-        grid += '<text x="%d" y="%.1f" fill="%s" font-size="10" font-family="%s"%s>%d°</text>' % (6, yy + 3, FAINT, FONT, _tnum(g), g)
+        grid += '<text x="%d" y="%.1f" fill="%s" font-size="10" font-family="%s"%s>%s°</text>' % (6, yy + 3, FAINT, FONT, _tnum(g), _axis_num(g))
     bars = ""
     for i, c in enumerate(cities):
         x = pad_x + (i * (W - 2 * pad_x) / (n - 1)) if n > 1 else W / 2
@@ -252,10 +300,10 @@ def elevation_chart(elevation, archviz=False):
         return H - pad_y - (m - mmin) / (mmax - mmin) * (H - 2 * pad_y)
 
     grid = ""
-    for g in range(int(mmin), int(mmax) + 1, 200):
+    for g in _y_gridlines(mmin, mmax, H - 2 * pad_y):
         yy = Y(g)
         grid += '<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="%s" stroke-width="%.1f"/>' % (pad_x, yy, W - pad_x, yy, LINE, hw)
-        grid += '<text x="%d" y="%.1f" fill="%s" font-size="10" font-family="%s"%s>%dm</text>' % (4, yy + 3, FAINT, FONT, _tnum(g), g)
+        grid += '<text x="%d" y="%.1f" fill="%s" font-size="10" font-family="%s"%s>%sm</text>' % (4, yy + 3, FAINT, FONT, _tnum(g), _axis_num(g))
     pts = " ".join("%.1f,%.1f" % (X(k), Y(m)) for k, m in zip(kms, ms))
     area = "M%.1f,%.1f L%s L%.1f,%.1f Z" % (X(kms[0]), H - pad_y, pts.replace(" ", " L"), X(kms[-1]), H - pad_y)
     line = '<polyline points="%s" fill="none" stroke="%s" stroke-width="2.5"/>' % (pts, INK)

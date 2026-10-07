@@ -281,7 +281,7 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 ## 6. 自检 + 交付
 
 - **先跑门禁**：`python3 scripts/check_quality.py <输出.html>`，**必须 PASS 才交付**。
-  一次查八项：emoji 残留、越界外链（应只有高德）、至少一张 SVG 图表、AI-slop 样式（紫渐变/霓虹/`#0D1117`）、注入属性噪声、**重复 id**、**占位符残留**（TODO / `__CITY__` / 【目的地】 / Lorem）、**长【】指引残留**。
+  一次查九项：emoji 残留、越界外链（应只有高德）、至少一张 SVG 图表、AI-slop 样式（紫渐变/霓虹/`#0D1117`）、注入属性噪声、**重复 id**、**占位符残留**（TODO / `__CITY__` / 【目的地】 / Lorem）、**长【】指引残留**、**y 轴刻度叠字**（相邻刻度 < 20px）。
   人工复核项（门禁不覆盖）：朱红 `#e0362b` 唯一强调、`line-height ≥ 1.7`、`max-width ≤ 820px`。
 - **fail-closed**：任何 FAIL **不许交付**，修复后重跑；**任何未执行的检查必须向用户显式声明**——「没跑」不等于「通过」。
   门禁因缺依赖等原因跑不了时，说清哪几项没跑，不要默认放行。
@@ -324,7 +324,7 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 | `references/amap-tools.md` | 高德 MCP 参数与调用顺序（现场补数据时用） |
 | `scripts/build_swiss.py` | JSON → 包豪斯精装版 HTML（纯标准库、零依赖；自动检测 archviz-layout） |
 | `scripts/build_viz.py` | JSON → 内嵌 inline SVG 图表（气温/路线/预算/海拔/泳道），零依赖 |
-| `scripts/check_quality.py` | 产出质量门禁（8 项），纯标准库，退出码 1 = 未通过 |
+| `scripts/check_quality.py` | 产出质量门禁（9 项），纯标准库，退出码 1 = 未通过 |
 | `scripts/probe_layout.js` | 布局体检：4 个视口查横向溢出（需 playwright）。退出码 1 = 有溢出，**2 = 缺 playwright（`NODE_PATH` 没设）**，3 = 用法错误 / 崩溃。本机调法见 §6 |
 | `scripts/build_examples.py` | 示例重建（`--write`）与防漂移校验（`--check`，CI 用）。**改了样本或渲染器就跑 `--write` 并提交** |
 | `examples/*.html` | 4 份渲染成品（**生成物但入库**，供 clone 后直接浏览）。**不要手改** |
