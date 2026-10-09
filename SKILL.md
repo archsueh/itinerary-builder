@@ -306,6 +306,33 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 - `present_files` 打开精装版（可附功能版对照）。文件名 `<原名>-精装.html`，不覆盖原文件。
 - 写入个人目录（如 `~/Documents/Notes/inbox/`）**先确认需求框架再写**（个人目录，走授权）。
 
+## 7. 可选出口：行程动画（交给 map-motion）
+
+路书交付后，用户说「把这趟做成一段动画 / 视频 / 发抖音」时走这条。
+**它是出口，不是流程的一部分**——不跑它照样能交付路书；跑它也**不回改 `itinerary.json`**。
+
+```bash
+python3 scripts/itinerary_to_motion.py itinerary.json                    # → itinerary.motion.json
+python3 scripts/itinerary_to_motion.py itinerary.json --globe --style satellite --size landscape
+~/Developer/map-motion/scripts/make.sh itinerary.motion.json 成片.mp4   # 需高德 key
+```
+
+- **只搬地点名与日期**，里程/路线交给 map-motion 用自己的高德 **REST** 通道重算 ——
+  与本路书 HTML 走的高德 **MCP** 通道**可能算出不同的数**。两处数字不同时以各自口径为准；
+  桥已把这条写进 spec 的 `_bridge` 字段。
+- **profile 自动选**：无航班 → `ground`（title → trip → overview）；只有航班 → `flight`；
+  两者都有 → `mixed`（去程航线 + 地面行程）。可 `--profile` 强制。
+- **必须人工核对地名**：编译时 map-motion 会打印「地点 X → 高德解析结果（级别）」，
+  同名地点会解析错（它自己的坑清单记着「香格里拉 → 某家酒店」）。
+  解析不准就把该站改成 `{"name": "显示名", "at": "更精确的地名"}` 或直接写坐标。
+- 缺高德 key 时**先要 key 再动手**：`~/.config/map-motion/amap_key`
+  （高德开放平台 → 应用管理 → 添加 Key → **服务平台选「Web服务」**，不是 JS API）。
+- 产物 `<原名>.motion.json`，与 HTML 并列，**不覆盖任何东西**。
+- 长片放后台跑；**3D 模式约 1–1.5 秒/帧**，30 秒片子要 15–25 分钟。
+
+> 依赖边界：本出口**只写 JSON**（纯标准库）。真正的渲染依赖在 map-motion 侧
+> （`uv` + playwright chromium + ffmpeg），**不进入本 skill 的依赖面**——这正是它不被并入本 skill 的原因。
+
 ---
 
 ## 资产与脚本
@@ -327,6 +354,7 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 | `scripts/check_quality.py` | 产出质量门禁（9 项），纯标准库，退出码 1 = 未通过 |
 | `scripts/probe_layout.js` | 布局体检：4 个视口查横向溢出（需 playwright）。退出码 1 = 有溢出，**2 = 缺 playwright（`NODE_PATH` 没设）**，3 = 用法错误 / 崩溃。本机调法见 §6 |
 | `scripts/build_examples.py` | 示例重建（`--write`）与防漂移校验（`--check`，CI 用）。**改了样本或渲染器就跑 `--write` 并提交** |
+| `scripts/itinerary_to_motion.py` | `itinerary.json` → **map-motion 镜头表**（纯标准库、零依赖、**单向出口**）。见 §7 |
 | `examples/*.html` | 4 份渲染成品（**生成物但入库**，供 clone 后直接浏览）。**不要手改** |
 | `docs/screenshots/` | 示例截图（430px 视口 ×2x） |
 | `CHANGELOG.md` | 变更记录（含向后兼容性判定）。**改渲染器/契约后必须追加** |
@@ -347,3 +375,14 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 - 无高德 MCP 时里程是估算值，这是**可信度下限**，必须在输出里声明。
 - 兜底重皮是「重皮」非「重排」：保留时间轴/按钮/表格结构，只换视觉语言。要文章流版需 huashu-md-html + pandoc（未装）。
 - 单一朱红强调是刻意的包豪斯选择；要多色阶段区分可在 `build_swiss.py` 加 stage 色，但默认不做。
+
+<!-- design-judgment-integration -->
+## Post-Generation Design Judgment
+
+交付前跑 `design-judgment` 的五段判断链做自检（即使本技能产出非图像，凡涉及视觉/排版/版式交付物均适用）：
+
+1. **五段链**：可见细节 → 感知效果 → 与任务·品牌契合 → 决策 → 下一步动作。
+2. **六维度**：层级与空间 / 字体与对齐 / 物理可信度 / 品牌保真 / 动效即时间构图 / 选稿改稿。
+3. **选模型按任务路由**（假设，非结论）：logo/产品保真 → Seedream class；海报/网格层级 → Grok class；动效/文字稳定 → Seedance class。详见 `design-judgment`。
+4. **三条硬边界**：不编加权平均分数、不编耗时/成本、单静帧不能判动效质量。
+5. 若发现问题，改完放回整版复核再交付。`design-judgment` 不可用时，按同样链条内联执行并引用具体位置。

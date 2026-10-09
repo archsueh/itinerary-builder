@@ -2,6 +2,49 @@
 
 > 变更记录。**向后兼容性单独标注**，因为本 skill 的产物是要交付给人的 HTML，静默改变渲染结果 = 静默改交付物。
 
+## 2026-10-09（五）— 新增可选出口：行程动画（map-motion 数据桥）
+
+### 向后兼容性
+
+✅ **完全向后兼容**。未改渲染器、未改数据契约、未改样本 ——
+4 个入库示例 HTML **逐字节未变**（`build_examples.py --check` 全 PASS）。
+新脚本是**新增的独立出口**，不被任何现有流程调用；不跑它，行为与之前完全一致。
+
+### 变更
+
+- **新增 `scripts/itinerary_to_motion.py`**（纯标准库、零依赖）：
+  `itinerary.json` → [map-motion](https://github.com/SpaceZephyr/map-motion) 的镜头表 `spec.json`，
+  把一份路书延伸成一段地图动效视频（MP4/GIF）。三个 profile 自动选：
+  `ground`（title → trip → overview）/ `flight`（pins + flight）/ `mixed`（去程航线 + 地面行程）。
+- `SKILL.md` 新增 **§7「可选出口：行程动画」**；「资产与脚本」表加一行。
+- `references/amap-tools.md` 新增 **「两条高德通道，不要混」** ——
+  本 skill 走**高德 MCP**（无需 key），map-motion 走**高德 REST**（需「Web服务」key），
+  同一趟路会被算两遍，**数字可能有差**；纪律是各用各的，不要互相凑数。
+
+### 为什么是「独立出口」而不是「并入」
+
+map-motion 与本 skill **相邻但产出物不同**（MP4 vs HTML），且有两条硬冲突：
+
+| 冲突 | 本 skill | map-motion |
+|---|---|---|
+| 依赖等级 | **零强依赖**（渲染兜底纯标准库） | `uv` + playwright chromium + ffmpeg |
+| 架构原则 | **两半不能混**（决策 / 渲染） | 视频渲染是第三个关注点 |
+
+并入 = 把「零依赖 HTML 生成器」改成「重依赖视频渲染器」。故采用**独立 skill + 单向数据桥**：
+桥只搬**地名与日期**，里程/路线由 map-motion 用自己的通道重算，**不搬数字**。
+
+### 实测（4 个入库样本）
+
+| 样本 | profile | 镜头序列 | 关键字段 |
+|---|---|---|---|
+| `itinerary.sample.json` | ground | title → trip → overview | 4 站；`dates` 2 项；`elevation: true`（有 `m`） |
+| `itinerary.bike.sample.json` | ground | title → trip → overview | 6 站（含闭环）；`elevation: true`；日序 `D1–D4` 不是日历日期 → 正确地不写 `dates` |
+| `itinerary.team.sample.json` | ground | title → trip → overview | 无 `viz.route` → 退到 `stages.stops`；`km` 为 `—` → 不写里程；`「杭州 · 论坛」`→ 拆成 `{"name": ..., "at": "杭州"}` |
+| `itinerary.flight.sample.json` | **mixed** | title → pins → flight → flight → trip → overview | 城市 厦门 → 上海 → 大阪（中转段「浦东 T1」按上一段到达城市推得）；地面 大阪/京都/东京 |
+
+4 份 spec 均通过 map-motion `compile.py` 的契约解析（用假 key 跑，全部推进到地理编码那步才停）。
+`trip.stops` 的对象形式 `{"name", "at"}` 经 `compile.py:305` 源码确认受支持。
+
 ## 2026-10-08（二）— 修 y 轴刻度密度（写死步长 → 按高度推导）；门禁 +1 项
 
 ### 向后兼容性
