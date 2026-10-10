@@ -37,7 +37,7 @@
 
 ### 海报 · 摩旅一日线（单页 3:4 分享图）
 
-可选出口 `build_poster.py`：同一份 `itinerary.json` 加 `poster{}`，出一张竖版分享海报。路线是示意图，不是真实地图。样本数据未经核实。
+可选出口 `build_poster.py`：同一份 `itinerary.json` 加 `poster{}`，出一张竖版分享海报。路线是示意图，不是真实地图。样本数据未经核实。同一份 JSON 还可出配套 [Markdown 路线文档](examples/05-poster-moto-day.md)（`build_route_md.py`），地名与分段里程与海报同源，避免手写跑偏。
 
 <img width="860" height="1148" alt="摩旅一日线海报" src="docs/screenshots/05-poster-moto-day.png">
 
@@ -66,6 +66,10 @@ python3 scripts/build_swiss.py <data.json> [输出.html]
 # 可选出口：单页 3:4 路线海报（需 poster{}）
 python3 scripts/build_poster.py <data.json> [输出.html]
 python3 scripts/check_quality.py --poster <输出.html>
+
+# 配套 Markdown 路线文档（同一份 JSON）
+python3 scripts/build_route_md.py <data.json> [输出.md]
+python3 scripts/check_quality.py --route-md <输出.md> <data.json>
 
 # 门禁 1：文本质量（emoji / 越界外链 / 图表 / AI-slop / 注入噪声 / 重复 id / 占位符 / 长【】 / 刻度叠字）
 python3 scripts/check_quality.py <输出.html>
@@ -129,7 +133,8 @@ python3 scripts/build_examples.py --write     # 改完样本后重建
 | `clothing[]` | 穿着卡 | `group/items` |
 | `tips[]` | 注意事项 | 字符串数组 |
 | `checklist[]` | **可勾选出行清单**（可选） | `text/group/when`；勾选状态存本机 `localStorage`，不联网 |
-| `poster` | **单页路线海报**（可选出口） | 见 SKILL.md §7b；不给则不影响精装版 |
+| `poster` | **单页路线海报**（可选出口） | 见 SKILL.md §7b；不给则不影响精装版；可同出路线 MD |
+| `verified_by` / `source` | **核实主体 / 来源**（可选） | 仅 `user` 时路线 MD 写 `tested: true`；stamp ≠ 已测 |
 | `budget_note` | 预算口径声明 | 紧贴预算图 |
 | `footer` | 页脚 | **里程/天气来源写这里**，不另设字段 |
 | `viz` | 图表数据块 | 见下 |
@@ -202,7 +207,7 @@ python3 scripts/build_examples.py --write     # 改完样本后重建
 | [`examples/02-bike-qinghai-lake.html`](examples/02-bike-qinghai-lake.html) | `assets/itinerary.bike.sample.json` | `m`/`gain` 爬升契约，故意不给 `elevation[]` |
 | [`examples/03-team-swimlane.html`](examples/03-team-swimlane.html) | `assets/itinerary.team.sample.json` | `viz.swimlane` 泳道图（7 人 × 11 天） |
 | [`examples/04-flight-japan.html`](examples/04-flight-japan.html) | `assets/itinerary.flight.sample.json` | `route_line` / `stays[]` / `flights[]` + 非城市天气格 + `checklist[]` |
-| [`examples/05-poster-moto-day.html`](examples/05-poster-moto-day.html) | `assets/itinerary.poster.sample.json` | 顶层 `poster{}` + 复用 `viz.route[]`（**示例数据**） |
+| [`examples/05-poster-moto-day.html`](examples/05-poster-moto-day.html) / [`05-poster-moto-day.md`](examples/05-poster-moto-day.md) | `assets/itinerary.poster.sample.json` | 顶层 `poster{}` + 复用 `viz.route[]` + 配套路线 MD（**示例数据**） |
 
 `examples/*.html` 是**生成物但入库**——为了让 clone 下来不跑任何东西就能浏览。**不要手改**：CI 会重新渲染并逐字节比对，不同步直接失败。改完样本跑 `python3 scripts/build_examples.py --write`。
 
@@ -217,7 +222,7 @@ SKILL.md                      Skill 主文件：决策 §1–§4 + 契约 + 呈�
 CHANGELOG.md                  变更记录，含每次的向后兼容性判定
 CONTRIBUTING.md               贡献指引
 assets/*.sample.json          5 份样本 —— 契约的可执行定义（含海报）
-examples/*.html               5 份渲染成品（4 路书 + 1 海报；生成物，入库供浏览）
+examples/*.html + 05-*.md     5 份 HTML + 1 份路线 MD（生成物，入库供浏览）
 docs/screenshots/             示例截图（路书 430px×2x；海报 3:4 全页）
 references/
   planning-rules.md           §1–§11 行程合理性质疑规则（规划阶段必读）
@@ -227,8 +232,9 @@ references/
 scripts/
   build_swiss.py              JSON → 包豪斯精装版 HTML（纯标准库）
   build_poster.py             JSON → 单页 3:4 路线海报（纯标准库，可选出口）
+  build_route_md.py           JSON → 配套 Markdown 路线文档（与海报同源）
   build_viz.py                JSON → 内联 SVG 图表（纯标准库）
-  check_quality.py            文本质量门禁（纯标准库；海报用 --poster）
+  check_quality.py            文本质量门禁（纯标准库；--poster / --route-md）
   probe_layout.js             布局门禁（Node + Playwright）
   build_examples.py           示例重建 / 防漂移校验
 ```

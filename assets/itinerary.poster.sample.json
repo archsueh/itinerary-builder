@@ -1,5 +1,5 @@
 {
-  "_comment": "【示例样本 · 非核实数据】摩旅一日线海报演示。地名与里程为示意值，仅用于展示 poster{} 契约与 build_poster.py 输出；真实行程须按 SKILL.md §2 核实并标注来源。海报是独立产物（分享/封面），不是路书皮肤——见 references/design-language-print.md。",
+  "_comment": "【示例样本 · 非核实数据】摩旅一日线海报演示。地名与里程为示意值，仅用于展示 poster{} 契约与 build_poster.py / build_route_md.py 输出；真实行程须按 SKILL.md §2 核实并标注来源。海报是独立产物（分享/封面），不是路书皮肤——见 references/design-language-print.md。",
 
   "title": "小绿汁一日摩旅（示例）",
   "eyebrow": "MOTO ROUTE · 示例样本",
@@ -9,6 +9,9 @@
 
   "mileage_source": "示例估算，非高德实测",
   "query_date": "YYYY-MM-DD",
+
+  "verified_by": "none",
+  "source": "示例样本，地名与里程为示意值；海报 stamp 文案摘自参考图，不代表本仓库用户已测",
 
   "weather": [],
   "stages": [],
@@ -35,7 +38,7 @@
       {"name": "草铺", "km": 16, "hours": 0.3, "note": "示例·补给", "icon": "fuel"},
       {"name": "禄脿", "km": 17, "hours": 0.35, "note": "示例"},
       {"name": "易门", "km": 48, "hours": 0.9, "note": "示例"},
-      {"name": "小绿汁·观景台", "km": 31, "hours": 0.7, "note": "示例·终点", "icon": "stay"}
+      {"name": "小绿汁·观景台", "km": 31, "hours": 0.7, "note": "示例·终点 · 绿汁坡 72 拐", "icon": "stay"}
     ]
   },
 

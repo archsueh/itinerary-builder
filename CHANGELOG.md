@@ -2,6 +2,34 @@
 
 > 变更记录。**向后兼容性单独标注**，因为本 skill 的产物是要交付给人的 HTML，静默改变渲染结果 = 静默改交付物。
 
+## 2026-10-11（日）— 配套 Markdown 路线文档 `build_route_md.py`
+
+与海报共用同一份 `itinerary.json`（含 `poster{}`），生成可读的路线 Markdown，专门挡住手写文档里的地名/里程/亲测跑偏。
+
+### 向后兼容性
+
+✅ **对既有 JSON / 精装版 HTML / 海报 HTML 完全兼容**。
+- `build_swiss.py` / `build_poster.py` **零改动行为**；示例 01–05 HTML 重建后**逐字节未变**。
+- 新增可选字段 `verified_by` / `source`；缺省 = 未核实，不影响海报渲染。
+- `check_quality.py` 默认与 `--poster` 模式不变；路线 MD 走 `--route-md`。
+
+### 变更
+
+- **新增 `scripts/build_route_md.py`**（纯标准库）：概览表 + 分段表（段距 = 相邻累计差）+ `poster.stats` 数据卡 + 标签 + 来源与核实。**不自造**路况/气温/设施。
+- 核实口径：`verified_by` = `none` | `user` | `source_author`；**仅 `user` → `tested: true`**。`poster.stamp` 只服务海报，不能升级为已测。
+- `scripts/check_quality.py` 增加 `--route-md <md> <json>`：累计单调、分段和、地名 ⊆ JSON、节点集与海报一致、未核实不得 `tested: true`。
+- `scripts/build_examples.py` 增加 `ROUTE_MD_MAPPING` → `examples/05-poster-moto-day.md`。
+- 样本：到达站 note 挂上「绿汁坡 72 拐」；`verified_by: none` + `source` 标明示例。
+- 文档：`SKILL.md` §7b、`roadbook-spec.md`、`README.md`、本 CHANGELOG。
+
+### 验证
+
+- `build_examples.py --write` / `--check` → 全过（含路线 MD）
+- 示例 01–05 HTML 与改前逐字节一致
+- 故意错误样本（非单调累计 / 错地名 / 累计当分段 / 未核实却 `tested: true`）门禁均拒绝
+
+---
+
 ## 2026-10-11（日）— 可选出口：单页 3:4 路线海报 `build_poster.py`
 
 接入 `references/design-language-print.md` 的版式（逆推自摩旅海报），作为**独立产物**，不替换精装版路书。

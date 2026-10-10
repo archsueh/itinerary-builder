@@ -47,6 +47,11 @@ POSTER_MAPPING = [
     ("assets/itinerary.poster.sample.json", "examples/05-poster-moto-day.html"),
 ]
 
+# Companion Markdown from the same poster sample (build_route_md.py).
+ROUTE_MD_MAPPING = [
+    ("assets/itinerary.poster.sample.json", "examples/05-poster-moto-day.md"),
+]
+
 # The renderer stamps nothing time-dependent, so a byte comparison is valid.
 # If that ever stops being true, compare a normalised form here instead.
 _STYLE_RE = re.compile(r"<style>.*?</style>", re.S)
@@ -61,7 +66,10 @@ RENDER_ENV = dict(os.environ, ROADBOOK_ARCHVIZ="1")
 
 
 def render(sample, out, kind="roadbook"):
-    script = "build_poster.py" if kind == "poster" else "build_swiss.py"
+    script = {
+        "poster": "build_poster.py",
+        "route-md": "build_route_md.py",
+    }.get(kind, "build_swiss.py")
     r = subprocess.run(
         [sys.executable, os.path.join(ROOT, "scripts", script),
          os.path.join(ROOT, sample), out],
@@ -72,13 +80,19 @@ def render(sample, out, kind="roadbook"):
     return r.stdout.strip()
 
 
-def gate(path, kind="roadbook"):
+def gate(path, kind="roadbook", sample=None):
     cmd = [sys.executable, os.path.join(ROOT, "scripts", "check_quality.py")]
     if kind == "poster":
         cmd.append("--poster")
-    cmd.append(path)
+        cmd.append(path)
+    elif kind == "route-md":
+        cmd.append("--route-md")
+        cmd.append(path)
+        cmd.append(os.path.join(ROOT, sample))
+    else:
+        cmd.append(path)
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)
-    return r.returncode == 0, r.stdout.strip()
+    return r.returncode == 0, (r.stdout or "").strip() or (r.stderr or "").strip()
 
 
 def main():
@@ -92,13 +106,15 @@ def main():
 
     jobs = [(s, e, "roadbook") for s, e in MAPPING] + [
         (s, e, "poster") for s, e in POSTER_MAPPING
+    ] + [
+        (s, e, "route-md") for s, e in ROUTE_MD_MAPPING
     ]
 
     for sample, example, kind in jobs:
         sample_p = os.path.join(ROOT, sample)
         example_p = os.path.join(ROOT, example)
         name = os.path.basename(example)
-        tag = "海报" if kind == "poster" else "路书"
+        tag = {"poster": "海报", "route-md": "路线MD"}.get(kind, "路书")
 
         if not os.path.exists(sample_p):
             print("[FAIL] %-40s 样本缺失 %s" % (name, sample))
@@ -113,7 +129,7 @@ def main():
             fails.append(name + " (render)")
             continue
 
-        ok, out = gate(target, kind=kind)
+        ok, out = gate(target, kind=kind, sample=sample)
         tail = [l for l in out.splitlines() if l.strip()][-1] if out else "(no output)"
         if not ok:
             print("[FAIL] %-40s 门禁未过：%s" % (name, tail))

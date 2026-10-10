@@ -377,6 +377,10 @@ python3 scripts/itinerary_to_motion.py itinerary.json --globe --style satellite 
 python3 scripts/build_poster.py <data.json> [输出.html]
 # 不传输出 → 输入同目录、同名加 "-海报.html"
 python3 scripts/check_quality.py --poster <输出.html>
+
+# 配套 Markdown 路线文档（同一份 JSON，防手写跑偏）
+python3 scripts/build_route_md.py <data.json> [输出.md]
+python3 scripts/check_quality.py --route-md <输出.md> <data.json>
 ```
 
 ### 为什么是独立脚本
@@ -426,7 +430,24 @@ python3 scripts/check_quality.py --poster <输出.html>
 
 没有 `poster{}` 时：`build_poster.py` 退出码 2 并提示；**精装版输出一字节不变**（海报脚本根本不被 `build_swiss.py` 调用）。
 
-样本：`assets/itinerary.poster.sample.json` → `examples/05-poster-moto-day.html`（**示例地名与里程，未经核实**）。
+样本：`assets/itinerary.poster.sample.json` → `examples/05-poster-moto-day.html` + `examples/05-poster-moto-day.md`（**示例地名与里程，未经核实**）。
+
+### 配套 Markdown 路线文档（`build_route_md.py`）
+
+海报之外，同一份 JSON 还可生成一份**路线 Markdown**（概览表 + 分段表 + 数据卡 + 核实状态）。用途：给人读/进笔记库，并**挡住手写文档常见错误**——地名与数据不一致、把累计里程当分段、技术点挂错路段、无出处的气温/补给、把别人的「亲测」写成 `tested: true`。
+
+- 地名 / 里程 / 路段备注**只从 JSON 来**；脚本不补写路况、气温、设施。
+- 分段 km = 相邻累计之差；`72 拐` 这类技术点只能写在对应到达站的 `note` 里（样本挂在易门 → 小绿汁）。
+- **`poster.stamp` 是海报装饰**，不会把 Markdown 的 `tested` 写成 true。核实走顶层字段：
+
+| 字段 | 取值 | Markdown 行为 |
+|---|---|---|
+| `verified_by` | `none` / 缺省 | `tested: false`，文案「未核实」 |
+| `verified_by` | `user` | `tested: true`，文案「用户亲测」 |
+| `verified_by` | `source_author` | `tested: false`，文案「来源作者亲测」+ 须在 `source` 注明出处 |
+| `source` | 自由文本 | 写入 frontmatter 与「来源与核实」节（口径同 footer / note 来源标注） |
+
+门禁：`check_quality.py --route-md` 校验累计单调、分段和 = 终点累计、MD 地名 ⊆ JSON、节点集与海报一致、未核实时不得 `tested: true`。
 
 ---
 
@@ -447,12 +468,13 @@ python3 scripts/check_quality.py --poster <输出.html>
 | `references/amap-tools.md` | 高德 MCP 参数与调用顺序（现场补数据时用） |
 | `scripts/build_swiss.py` | JSON → 包豪斯精装版 HTML（纯标准库、零依赖；自动检测 archviz-layout） |
 | `scripts/build_viz.py` | JSON → 内嵌 inline SVG 图表（气温/路线/预算/海拔/泳道），零依赖 |
-| `scripts/check_quality.py` | 产出质量门禁（9 项），纯标准库，退出码 1 = 未通过 |
+| `scripts/check_quality.py` | 产出质量门禁（路书 9 项 / `--poster` / `--route-md`），纯标准库，退出码 1 = 未通过 |
 | `scripts/probe_layout.js` | 布局体检：4 个视口查横向溢出（需 playwright）。退出码 1 = 有溢出，**2 = 缺 playwright（`NODE_PATH` 没设）**，3 = 用法错误 / 崩溃。本机调法见 §6 |
 | `scripts/build_examples.py` | 示例重建（`--write`）与防漂移校验（`--check`，CI 用）。**改了样本或渲染器就跑 `--write` 并提交** |
 | `scripts/itinerary_to_motion.py` | `itinerary.json` → **map-motion 镜头表**（纯标准库、零依赖、**单向出口**）。见 §7 |
 | `scripts/build_poster.py` | `itinerary.json`（含 `poster{}`）→ **单页 3:4 路线海报 HTML**（纯标准库、零依赖、**单向出口**）。见 §7b |
-| `examples/*.html` | 5 份渲染成品（4 路书 + 1 海报；**生成物但入库**）。**不要手改** |
+| `scripts/build_route_md.py` | 同一份 JSON → **配套 Markdown 路线文档**（防手写跑偏；`verified_by`/`source`）。见 §7b |
+| `examples/*.html` / `examples/05-poster-moto-day.md` | 5 份 HTML + 1 份路线 MD（**生成物但入库**）。**不要手改** |
 | `docs/screenshots/` | 示例截图（430px 视口 ×2x） |
 | `CHANGELOG.md` | 变更记录（含向后兼容性判定）。**改渲染器/契约后必须追加** |
 

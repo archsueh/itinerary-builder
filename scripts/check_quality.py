@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Roadbook HTML quality gate — zero deps, stdlib only.
+"""Roadbook / poster / route-md quality gate — zero deps, stdlib only.
 
-Checks (all must pass; exit 1 on any FAIL):
+Checks for HTML modes (all must pass; exit 1 on any FAIL):
   1. no emoji residue            (anti-AI-slop, see references/design-language.md §3)
   2. no external refs except AMap URI   (page must stay self-contained)
   3. at least one inline-SVG chart rendered   (viz block present in JSON?)
@@ -21,10 +21,14 @@ rejects both `\\x{...}` and `\\|` alternation — the old `grep -nE '[\\x{1F000}
 command errored out and got swallowed by `|| echo OK`, i.e. a silent false-negative.
 
 Usage:
-  python3 scripts/check_quality.py <output.html>           # roadbook mode (default)
-  python3 scripts/check_quality.py --poster <output.html>  # poster mode (build_poster.py)
+  python3 scripts/check_quality.py <output.html>                  # roadbook mode (default)
+  python3 scripts/check_quality.py --poster <output.html>         # poster mode (build_poster.py)
+  python3 scripts/check_quality.py --route-md <route.md> <data.json>
+      # companion Markdown vs the same JSON the poster uses
 
 """
+import json
+import os
 import re
 import sys
 
@@ -52,7 +56,7 @@ AXIS_TICK = re.compile(r'<text x="(\d+)" y="([\d.]+)"[^>]*>-?[\d.]+[m°]</text>'
 MIN_AXIS_GAP_PX = 20
 
 
-def main(path, mode="roadbook"):
+def main_html(path, mode="roadbook"):
     with open(path, encoding="utf-8") as f:
         s = f.read()
 
@@ -162,13 +166,238 @@ def main(path, mode="roadbook"):
     return 0
 
 
+# ---- route-md mode ---------------------------------------------------------
+
+def _load_poster_nodes(data: dict):
+    """Import the poster's collector so MD and HTML share one definition."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    from build_poster import _collect_nodes  # local import
+    poster = data.get("poster") or {}
+    if not isinstance(poster, dict):
+        poster = {}
+    return _collect_nodes(data, poster)
+
+
+def _parse_frontmatter(md: str) -> tuple[dict, str]:
+    if not md.startswith("---"):
+        return {}, md
+    end = md.find("\n---", 3)
+    if end < 0:
+        return {}, md
+    block = md[3:end].strip("\n")
+    body = md[end + 4:]
+    meta = {}
+    for line in block.splitlines():
+        if ":" not in line:
+            continue
+        k, v = line.split(":", 1)
+        meta[k.strip()] = v.strip()
+    return meta, body
+
+
+def _yamlish_bool(v: str) -> bool | None:
+    s = (v or "").strip().lower()
+    if s in ("true", "yes", "1"):
+        return True
+    if s in ("false", "no", "0"):
+        return False
+    return None
+
+
+def _yamlish_str(v: str) -> str:
+    s = (v or "").strip()
+    if len(s) >= 2 and s[0] == s[-1] and s[0] in ("'", '"'):
+        try:
+            return json.loads(s)
+        except Exception:
+            return s[1:-1]
+    return s
+
+
+def main_route_md(md_path: str, json_path: str) -> int:
+    with open(md_path, encoding="utf-8") as f:
+        md = f.read()
+    with open(json_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    fails = []
+    meta, body = _parse_frontmatter(md)
+
+    poster = data.get("poster")
+    if not isinstance(poster, dict) or not poster:
+        print("[FAIL] JSON 缺少 poster{}")
+        fails.append("no-poster")
+        print()
+        print("FAIL — 未通过项：%s" % "、".join(fails))
+        return 1
+
+    nodes = _load_poster_nodes(data)
+    names = [n["name"] for n in nodes]
+    name_set = set(names)
+
+    # 1) cumulative monotonic + segment sum
+    if len(nodes) < 2:
+        print("[FAIL] 节点数 < 2")
+        fails.append("nodes")
+    else:
+        prev = None
+        mono_ok = True
+        for i, n in enumerate(nodes):
+            c = float(n["cum_km"])
+            if prev is not None and c < prev:
+                mono_ok = False
+                print("[FAIL] 累计里程非单调：%s cum=%s < prev=%s" % (n["name"], c, prev))
+                fails.append("cum-monotonic")
+                break
+            prev = c
+        if mono_ok:
+            print("[OK] 累计里程单调递增（%d 站）" % len(nodes))
+
+        seg_sum = 0.0
+        for i in range(1, len(nodes)):
+            seg_sum += float(nodes[i]["cum_km"]) - float(nodes[i - 1]["cum_km"])
+        end = float(nodes[-1]["cum_km"])
+        if abs(seg_sum - end) > 1e-6:
+            print("[FAIL] 分段之和 %.6g ≠ 终点累计 %.6g" % (seg_sum, end))
+            fails.append("seg-sum")
+        else:
+            print("[OK] 分段之和 = 终点累计（%gkm）" % end)
+
+    # 2) every place name appearing as a route node in the MD table must be in JSON
+    #    Parse the 分段 table rows: "| n | A → B | seg | cum | note |"
+    table_names = []
+    for m in re.finditer(
+        r"^\|\s*\d+\s*\|\s*([^|]+?)\s*→\s*([^|]+?)\s*\|",
+        body,
+        re.M,
+    ):
+        table_names.append(m.group(1).strip())
+        table_names.append(m.group(2).strip())
+    # Also the 节点 line at the bottom: "节点（与海报相同）：A → B → …"
+    trail = re.search(r"节点（与海报相同）：(.+)", body)
+    trail_names = []
+    if trail:
+        trail_names = [x.strip() for x in trail.group(1).split("→") if x.strip()]
+
+    mentioned = set(table_names) | set(trail_names)
+    # Overview start/end
+    for m in re.finditer(r"^\|\s*(起点|终点)\s*\|\s*([^|]+?)\s*\|", body, re.M):
+        mentioned.add(m.group(2).strip())
+
+    extra = sorted(mentioned - name_set)
+    missing_in_md = [n for n in names if n not in mentioned]
+    print("[%s] 地名 ⊆ JSON：MD 出现 %d 个，越界 %d %s" % (
+        "FAIL" if extra else "OK", len(mentioned), len(extra), extra[:5]))
+    if extra:
+        fails.append("place-not-in-json")
+
+    # 3) poster HTML node set == MD node set (via shared JSON collector)
+    #    Compare ordered lists from JSON (source of truth for both artifacts).
+    if trail_names and trail_names != names:
+        print("[FAIL] MD 节点序列与 JSON/海报不一致：%s vs %s" % (trail_names, names))
+        fails.append("node-set-mismatch")
+    elif missing_in_md:
+        print("[FAIL] JSON 节点未出现在 MD：%s" % missing_in_md)
+        fails.append("node-set-mismatch")
+    else:
+        print("[OK] 节点集合与 JSON/海报一致：%s" % " → ".join(names))
+
+    # 4) tested: true forbidden unless verified_by == user
+    vb = str(data.get("verified_by") or "none").strip().lower().replace("-", "_")
+    if vb in ("", "unverified"):
+        vb = "none"
+    if vb in ("self",):
+        vb = "user"
+    if vb in ("author", "source"):
+        vb = "source_author"
+    if vb not in ("none", "user", "source_author"):
+        # unknown → treat as none for the gate
+        vb_eff = "none"
+    else:
+        vb_eff = vb
+
+    tested_meta = _yamlish_bool(meta.get("tested", "false"))
+    fm_vb = (meta.get("verified_by") or "").strip().lower()
+
+    if tested_meta is True and vb_eff != "user":
+        print("[FAIL] tested: true，但 JSON verified_by=%r（≠ user）——"
+              "海报 stamp 不能升级为 tested" % data.get("verified_by"))
+        fails.append("tested-without-user")
+    else:
+        print("[OK] tested 与 verified_by 一致（tested=%s, verified_by=%s）"
+              % (tested_meta, vb_eff))
+
+    if fm_vb and fm_vb != vb_eff and not (
+        vb_eff == "none" and fm_vb in ("none", "unverified")
+    ):
+        print("[FAIL] frontmatter verified_by=%r ≠ JSON %r" % (fm_vb, vb_eff))
+        fails.append("verified-by-mismatch")
+    else:
+        print("[OK] frontmatter verified_by 对齐 JSON")
+
+    # 5) emoji residue in MD (same ranges; keep it sober)
+    emo = sorted({c for c in md
+                  if any(lo <= ord(c) <= hi for lo, hi in EMOJI_RANGES)
+                  and c not in ALLOWED_SYMBOLS})
+    print("[%s] emoji 残留：%d %s" % ("FAIL" if emo else "OK", len(emo), "".join(emo[:8])))
+    if emo:
+        fails.append("emoji")
+
+    # 6) segment table: reconcilable with JSON cum diffs
+    seg_rows = list(re.finditer(
+        r"^\|\s*\d+\s*\|\s*([^|]+?)\s*→\s*([^|]+?)\s*\|\s*([0-9.]+)\s*\|\s*([0-9.]+)\s*\|",
+        body,
+        re.M,
+    ))
+    if len(nodes) >= 2 and len(seg_rows) != len(nodes) - 1:
+        print("[FAIL] 分段表行数 %d ≠ 节点相邻段数 %d"
+              % (len(seg_rows), len(nodes) - 1))
+        fails.append("seg-row-count")
+    else:
+        bad_seg = []
+        for i, m in enumerate(seg_rows):
+            a, b = nodes[i], nodes[i + 1]
+            expect_seg = float(b["cum_km"]) - float(a["cum_km"])
+            expect_cum = float(b["cum_km"])
+            got_seg = float(m.group(3))
+            got_cum = float(m.group(4))
+            if abs(got_seg - expect_seg) > 1e-6 or abs(got_cum - expect_cum) > 1e-6:
+                bad_seg.append(i + 1)
+            if m.group(1).strip() != a["name"] or m.group(2).strip() != b["name"]:
+                bad_seg.append(i + 1)
+        if bad_seg:
+            print("[FAIL] 分段表与 JSON 不一致：行 %s" % bad_seg)
+            fails.append("seg-table")
+        else:
+            print("[OK] 分段表与 JSON 段距/累计一致（%d 段）" % len(seg_rows))
+
+    print()
+    if fails:
+        print("FAIL — 未通过项：%s" % "、".join(fails))
+        return 1
+    print("PASS — 全部通过")
+    return 0
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     mode = "roadbook"
     if args and args[0] == "--poster":
         mode = "poster"
         args = args[1:]
+        if len(args) < 1:
+            print(__doc__)
+            sys.exit(2)
+        sys.exit(main_html(args[0], mode=mode))
+    if args and args[0] == "--route-md":
+        args = args[1:]
+        if len(args) < 2:
+            print(__doc__)
+            sys.exit(2)
+        sys.exit(main_route_md(args[0], args[1]))
     if len(args) < 1:
         print(__doc__)
         sys.exit(2)
-    sys.exit(main(args[0], mode=mode))
+    sys.exit(main_html(args[0], mode=mode))
