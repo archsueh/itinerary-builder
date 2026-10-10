@@ -136,6 +136,7 @@ metadata:
 | `clothing[]` | 穿着卡 | `group/items` |
 | `tips[]` | 注意事项 | 字符串数组 |
 | `checklist[]` | **可勾选的出行清单**（可选） | `text`（必给）/ `group` / `when`，见下；不给则整节不出现 |
+| `poster` | **单页路线海报**（可选出口） | 见 §7b；不给则 `build_poster.py` 拒绝渲染，**不影响** `build_swiss.py` |
 | `budget_note` | 预算口径声明 | 紧贴预算图 |
 | `footer` | 页脚 | **里程/天气/订单截图来源写这里**，不另设字段 |
 | `viz` | 图表数据块 | 见下 |
@@ -367,6 +368,66 @@ python3 scripts/itinerary_to_motion.py itinerary.json --globe --style satellite 
 > 依赖边界：本出口**只写 JSON**（纯标准库）。真正的渲染依赖在 map-motion 侧
 > （`uv` + playwright chromium + ffmpeg），**不进入本 skill 的依赖面**——这正是它不被并入本 skill 的原因。
 
+## 7b. 可选出口：单页路线海报（`build_poster.py`）
+
+路书交付后，用户说「出一张分享图 / 海报 / 封面 / 小红书竖版」时走这条。
+**它是出口，不是流程的一部分**——不跑它照样能交付路书；跑它也**不回改**精装版 HTML。
+
+```bash
+python3 scripts/build_poster.py <data.json> [输出.html]
+# 不传输出 → 输入同目录、同名加 "-海报.html"
+python3 scripts/check_quality.py --poster <输出.html>
+```
+
+### 为什么是独立脚本
+
+海报与路书是**两种产物**：一页 3:4 分享图 vs 多段可交互页面。版式（居中、双线外框、印章、胶囊标签、路线图做主体）与瑞士/包豪斯路书的五条纪律正面冲突（详见 `references/design-language-print.md` §1）。塞进 `build_swiss.py` 会重蹈「功能版」退役的覆辙——故独立为 `scripts/build_poster.py`。
+
+**色板取舍**：版式跟印刷风；强调色仍用路书红 `#e0362b`（单一强调，Bauhaus 克制），不用印刷风的橙/砖红/灰橄榄三色。字体走 sans，与精装版一致。
+
+### `poster{}` 契约
+
+```json
+"poster": {
+  "kicker": "MOTO ROUTE · 昆明出发",
+  "endpoints": "KUNMING → LVZHI",
+  "title": "骑进 80 年代",
+  "highlight": "80",
+  "subtitle": "小绿汁 · 134km 国道摩旅一日线",
+  "subtitle_highlight": "134km",
+  "slogan": ["一条60年的铜矿公路", "把整座80年代小镇留在了峡谷里"],
+  "slogan_highlight": "80年代小镇",
+  "stats": [
+    {"value": "134km", "label": "单程全程国道"},
+    {"value": "2h56m", "label": "去程骑行", "accent": true},
+    {"value": "72拐", "label": "绿汁坡连续发卡弯"}
+  ],
+  "tags": ["#72道拐", "#国家工业遗产"],
+  "stamp": {"status": "已骑行", "proof": "√ 亲测", "date": "2026.10.1"},
+  "path": [[0.18, 0.10], [0.42, 0.22], [0.78, 0.88]],
+  "footer": "路线为示意图，非真实地图"
+}
+```
+
+| 字段 | 说明 |
+|---|---|
+| `kicker` / `endpoints` | 顶栏左右小字 |
+| `title` + `highlight` | 大标题；`highlight` 出现在 title 里的那段用强调色放大 |
+| `subtitle` + `subtitle_highlight` | 副标题一行 |
+| `slogan[]` + `slogan_highlight` | 居中两行文案 |
+| `stats[]`（≤3） | 三格数据卡；`accent: true` 或中间一格用强调色 |
+| `tags[]` | 底部胶囊；无 `#` 时自动补 |
+| `stamp` | 可选核验印章（`status` / `proof` / `date`，≤3 行短文） |
+| `path` | 可选 `[x,y]` 列表（0–1 相对坐标），微调示意图形状 |
+| `nodes[]` | 可选；不给则复用 `viz.route[]` 的 `name` + 段距 `km`（累加为累计里程） |
+| 节点 `icon` | 可选：`fuel` / `stay` / `pin` |
+
+**路线图是示意图，不是真实地图**——用节点顺序与累计里程生成路径，**不调地图 API、不联网**。交付时必须在页脚或 footer 写明这一点。
+
+没有 `poster{}` 时：`build_poster.py` 退出码 2 并提示；**精装版输出一字节不变**（海报脚本根本不被 `build_swiss.py` 调用）。
+
+样本：`assets/itinerary.poster.sample.json` → `examples/05-poster-moto-day.html`（**示例地名与里程，未经核实**）。
+
 ---
 
 ## 资产与脚本
@@ -377,11 +438,12 @@ python3 scripts/itinerary_to_motion.py itinerary.json --globe --style satellite 
 | `assets/itinerary.bike.sample.json` | **骑行样本**：环青海湖 4 日，含 `m`/`gain`，故意不给 `elevation[]` |
 | `assets/itinerary.team.sample.json` | **团队样本**：7 人 × 11 天，核心是 `viz.swimlane` 泳道图 |
 | `assets/itinerary.flight.sample.json` | **出境样本**：大阪进东京出 7 天 6 晚，演示 `route_line` / `stays[]` / `flights[]` 三新字段 + 非城市天气格（`USJ`/`TYPHOON`）+ 可勾选 `checklist[]` |
+| `assets/itinerary.poster.sample.json` | **海报样本**：摩旅一日线示意，演示顶层 `poster{}` + 复用 `viz.route[]`；**示例数据，未经核实** |
 | `references/planning-rules.md` | 行程合理性质疑规则（§1–§11）。**规划阶段必读** |
 | `references/booking-and-budget.md` | 预订节奏、省钱战术、签证/保险提前量、多城市衔接。**日期确认后必读** |
 | `references/roadbook-spec.md` | JSON 字段与渲染口径、交付流程。**每次产出必读** |
 | `references/design-language.md` | 瑞士/包豪斯设计令牌 + 反 slop 清单 + 字段映射 + 可视化细则 |
-| `references/design-language-print.md` | **候选第二设计语言（未接入）**：印刷复古风令牌 + 版式几何 + 组件清单 + 路线图配方。逆推自一张摩旅海报，**当前无任何脚本消费它**；接入前先读其 §8「三个决策」 |
+| `references/design-language-print.md` | **海报设计语言**：印刷复古风令牌 + 版式几何。`build_poster.py` 已接入版式；强调色取路书红（见 §7b 色板取舍） |
 | `references/amap-tools.md` | 高德 MCP 参数与调用顺序（现场补数据时用） |
 | `scripts/build_swiss.py` | JSON → 包豪斯精装版 HTML（纯标准库、零依赖；自动检测 archviz-layout） |
 | `scripts/build_viz.py` | JSON → 内嵌 inline SVG 图表（气温/路线/预算/海拔/泳道），零依赖 |
@@ -389,7 +451,8 @@ python3 scripts/itinerary_to_motion.py itinerary.json --globe --style satellite 
 | `scripts/probe_layout.js` | 布局体检：4 个视口查横向溢出（需 playwright）。退出码 1 = 有溢出，**2 = 缺 playwright（`NODE_PATH` 没设）**，3 = 用法错误 / 崩溃。本机调法见 §6 |
 | `scripts/build_examples.py` | 示例重建（`--write`）与防漂移校验（`--check`，CI 用）。**改了样本或渲染器就跑 `--write` 并提交** |
 | `scripts/itinerary_to_motion.py` | `itinerary.json` → **map-motion 镜头表**（纯标准库、零依赖、**单向出口**）。见 §7 |
-| `examples/*.html` | 4 份渲染成品（**生成物但入库**，供 clone 后直接浏览）。**不要手改** |
+| `scripts/build_poster.py` | `itinerary.json`（含 `poster{}`）→ **单页 3:4 路线海报 HTML**（纯标准库、零依赖、**单向出口**）。见 §7b |
+| `examples/*.html` | 5 份渲染成品（4 路书 + 1 海报；**生成物但入库**）。**不要手改** |
 | `docs/screenshots/` | 示例截图（430px 视口 ×2x） |
 | `CHANGELOG.md` | 变更记录（含向后兼容性判定）。**改渲染器/契约后必须追加** |
 

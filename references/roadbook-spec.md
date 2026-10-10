@@ -33,6 +33,7 @@
 | `clothing[]` | `group`（场景+温度）、`items`（分层穿搭与装备） |
 | `tips[]` | 注意事项条目（行车、高反、车况、预约、应急） |
 | `checklist[]` | **可选**，可勾选的出行清单：`text`（必给，支持 `<br>`）、`group`（分组名，相同值的连续项自动归组，按数组顺序）、`when`（自由文本时点标签，如 `T-7` / `出发当天`）。渲染为原生 checkbox，勾选状态只存本机 `localStorage`（key 含行程标识），不联网。**不给则整节不出现、输出与旧版逐字节一致**。tips 讲「要知道什么」，checklist 列「要做完什么」，同一句不两处写 |
+| `poster` | **可选出口**，单页 3:4 路线海报（`scripts/build_poster.py`）。字段见 SKILL.md §7b。路线节点优先复用 `viz.route[]`；可选 `path`（0–1 相对坐标）微调示意图。**不给则海报脚本拒绝渲染；精装版 `build_swiss.py` 输出一字节不变** |
 | `decisions[]` | **论证字段**（渲染时忽略，人必读）：`id`/`conclusion`/`reason`/`rejected_alternative`/`tradeoff` |
 | `viz` | 图表数据块：`route[]` / `budget[]` / `elevation[]`（可省略）/ `swimlane`（多人并行）；契约见 SKILL.md「二、数据契约」 |
 | `footer` | 数据来源与查询日期；可用 `<br>` 换行。**订单截图 / 邮件的汇总来源也写这里**（见下「字段来源标注」） |
@@ -63,6 +64,7 @@
 
 1. 在工作区建语义化任务目录（如 `sichuan-roadtrip/`），JSON 与输出 HTML 放其中。
 2. `build_swiss.py` 生成单文件自包含 HTML（文件名语义化，不要用 index.html）。
+   可选出口：`build_poster.py` 生成单页 3:4 海报（需 `poster{}`）；`check_quality.py --poster` 过门禁。
 3. **门禁**：`python3 scripts/check_quality.py <输出.html>` 必须 PASS（emoji 残留 / 越界外链 / 至少一张 SVG / AI-slop / 注入噪声）。人工复核：朱红唯一强调、`line-height ≥ 1.7`、`max-width ≤ 820px`。
 
 ## 四、交付

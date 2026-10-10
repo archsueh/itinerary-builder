@@ -2,6 +2,40 @@
 
 > 变更记录。**向后兼容性单独标注**，因为本 skill 的产物是要交付给人的 HTML，静默改变渲染结果 = 静默改交付物。
 
+## 2026-10-11（日）— 可选出口：单页 3:4 路线海报 `build_poster.py`
+
+接入 `references/design-language-print.md` 的版式（逆推自摩旅海报），作为**独立产物**，不替换精装版路书。
+
+### 向后兼容性
+
+✅ **对既有 JSON / 精装版 HTML 完全兼容**。
+- `build_swiss.py` / `build_viz.py` **零改动**；示例 01–04 重建后**逐字节未变**。
+- `poster{}` 是可选字段；没有它时 `build_poster.py` 退出码 2，不碰精装版。
+- `check_quality.py` 默认模式不变；海报走 `--poster`（要求内联 SVG + `data-poster`，不要求命名图表标题）。
+
+### 变更
+
+- **新增 `scripts/build_poster.py`**（纯标准库）：`itinerary.json`（含 `poster{}`）→ 单文件 3:4 竖版海报 HTML。
+  - 顶栏 kicker / endpoints、大标题（`highlight` 强调色放大）、副标题、SVG 路线示意图、slogan、三格数据卡、胶囊标签、可选核验印章。
+  - 路线节点优先复用 `viz.route[]`（段距累加）；可选 `poster.path`（0–1）或节点 `x/y` 微调形状；**不调地图 API、不联网**。
+  - **色板取舍**：版式跟印刷风；强调色用路书红 `#e0362b`（单一强调），不用橙/砖红/灰橄榄三色。
+- `scripts/check_quality.py` 增加 `--poster` 模式。
+- `scripts/build_examples.py` 增加 `POSTER_MAPPING`（与路书 MAPPING 分开）。
+- 样本 `assets/itinerary.poster.sample.json` → `examples/05-poster-moto-day.html`（**示例地名与里程，标明未经核实**）。
+- 文档：`SKILL.md` §7b、`roadbook-spec.md`、`design-language.md` 例外 2、`design-language-print.md` §10、`README.md` 效果图。
+
+### 为什么是独立脚本
+
+海报与路书是两种产物（一页分享图 vs 多段可交互页），版式与瑞士纪律正面冲突。塞进 `build_swiss.py` 会重蹈「功能版」退役的覆辙（见 `design-language-print.md` §8 决策 1）。
+
+### 验证
+
+- `build_examples.py --write` / `--check` → **5/5**
+- 示例 01–04 与改前逐字节一致
+- `check_quality.py --poster examples/05-poster-moto-day.html` → PASS
+
+---
+
 ## 2026-10-10（六）— 订单截图 / 邮件识别流程 + 可勾选出行清单 `checklist[]`
 
 借鉴 Paths（trip.gopaths.ai）的两处做法，按本 skill 的「决策先定死 + 单文件离线」口径落地；

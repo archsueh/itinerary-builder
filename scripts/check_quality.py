@@ -20,7 +20,10 @@ Why Python and not grep/rg: this machine has NO ripgrep, and macOS BSD grep
 rejects both `\\x{...}` and `\\|` alternation — the old `grep -nE '[\\x{1F000}-...]'`
 command errored out and got swallowed by `|| echo OK`, i.e. a silent false-negative.
 
-Usage:  python3 scripts/check_quality.py <output.html>
+Usage:
+  python3 scripts/check_quality.py <output.html>           # roadbook mode (default)
+  python3 scripts/check_quality.py --poster <output.html>  # poster mode (build_poster.py)
+
 """
 import re
 import sys
@@ -49,7 +52,7 @@ AXIS_TICK = re.compile(r'<text x="(\d+)" y="([\d.]+)"[^>]*>-?[\d.]+[m°]</text>'
 MIN_AXIS_GAP_PX = 20
 
 
-def main(path):
+def main(path, mode="roadbook"):
     with open(path, encoding="utf-8") as f:
         s = f.read()
 
@@ -73,15 +76,29 @@ def main(path):
     if bad:
         fails.append("external-refs")
 
-    # 3) charts — 至少一张。单线自驾出气温/路线/海拔/预算；团队出行只出泳道图，
-    #    故不要求四张齐全，只要求「有图」，并列出实际渲染了哪些供人核对。
-    found = [c for c in CHARTS if c in s]
-    print("[%s] SVG 图表：%d 张已渲染 %s%s" % (
-        "OK" if found else "FAIL", len(found),
-        "、".join(found) if found else "（无）",
-        " → 检查 JSON 的 viz 块" if not found else ""))
-    if not found:
-        fails.append("charts")
+    # 3) charts —
+    #    roadbook：至少一张命名图表（气温/路线/海拔/预算/泳道）。
+    #    poster：不要求命名图表（海报是另一套产物），但必须有内联 <svg> 路线示意图，
+    #            且带 data-poster 标记，避免把路书误跑成海报模式。
+    if mode == "poster":
+        has_svg = "<svg" in s
+        has_mark = 'data-poster=' in s
+        print("[%s] 海报 SVG：%s · data-poster：%s" % (
+            "OK" if has_svg and has_mark else "FAIL",
+            "有" if has_svg else "无",
+            "有" if has_mark else "无"))
+        if not has_svg:
+            fails.append("poster-svg")
+        if not has_mark:
+            fails.append("poster-mark")
+    else:
+        found = [c for c in CHARTS if c in s]
+        print("[%s] SVG 图表：%d 张已渲染 %s%s" % (
+            "OK" if found else "FAIL", len(found),
+            "、".join(found) if found else "（无）",
+            " → 检查 JSON 的 viz 块" if not found else ""))
+        if not found:
+            fails.append("charts")
 
     # 4) slop
     for name, pat in SLOP_PATTERNS:
@@ -146,7 +163,12 @@ def main(path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    args = sys.argv[1:]
+    mode = "roadbook"
+    if args and args[0] == "--poster":
+        mode = "poster"
+        args = args[1:]
+    if len(args) < 1:
         print(__doc__)
         sys.exit(2)
-    sys.exit(main(sys.argv[1]))
+    sys.exit(main(args[0], mode=mode))

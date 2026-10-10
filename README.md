@@ -35,6 +35,12 @@
 
 <img width="860" height="12732" alt="出境路书全页" src="docs/screenshots/04-flight-full.png">
 
+### 海报 · 摩旅一日线（单页 3:4 分享图）
+
+可选出口 `build_poster.py`：同一份 `itinerary.json` 加 `poster{}`，出一张竖版分享海报。路线是示意图，不是真实地图。样本数据未经核实。
+
+<img width="860" height="1148" alt="摩旅一日线海报" src="docs/screenshots/05-poster-moto-day.png">
+
 ---
 
 ## 快速安装
@@ -53,9 +59,13 @@ ln -s "$PWD/itinerary-builder" ~/.workbuddy-ai/skills/itinerary-builder
 ## 用法
 
 ```bash
-# 渲染：JSON → 单文件自包含 HTML
+# 渲染：JSON → 单文件自包含 HTML（路书）
 python3 scripts/build_swiss.py <data.json> [输出.html]
 # 不传输出 → 输入同目录、同名加 "-精装.html"
+
+# 可选出口：单页 3:4 路线海报（需 poster{}）
+python3 scripts/build_poster.py <data.json> [输出.html]
+python3 scripts/check_quality.py --poster <输出.html>
 
 # 门禁 1：文本质量（emoji / 越界外链 / 图表 / AI-slop / 注入噪声 / 重复 id / 占位符 / 长【】 / 刻度叠字）
 python3 scripts/check_quality.py <输出.html>
@@ -119,6 +129,7 @@ python3 scripts/build_examples.py --write     # 改完样本后重建
 | `clothing[]` | 穿着卡 | `group/items` |
 | `tips[]` | 注意事项 | 字符串数组 |
 | `checklist[]` | **可勾选出行清单**（可选） | `text/group/when`；勾选状态存本机 `localStorage`，不联网 |
+| `poster` | **单页路线海报**（可选出口） | 见 SKILL.md §7b；不给则不影响精装版 |
 | `budget_note` | 预算口径声明 | 紧贴预算图 |
 | `footer` | 页脚 | **里程/天气来源写这里**，不另设字段 |
 | `viz` | 图表数据块 | 见下 |
@@ -191,6 +202,7 @@ python3 scripts/build_examples.py --write     # 改完样本后重建
 | [`examples/02-bike-qinghai-lake.html`](examples/02-bike-qinghai-lake.html) | `assets/itinerary.bike.sample.json` | `m`/`gain` 爬升契约，故意不给 `elevation[]` |
 | [`examples/03-team-swimlane.html`](examples/03-team-swimlane.html) | `assets/itinerary.team.sample.json` | `viz.swimlane` 泳道图（7 人 × 11 天） |
 | [`examples/04-flight-japan.html`](examples/04-flight-japan.html) | `assets/itinerary.flight.sample.json` | `route_line` / `stays[]` / `flights[]` + 非城市天气格 + `checklist[]` |
+| [`examples/05-poster-moto-day.html`](examples/05-poster-moto-day.html) | `assets/itinerary.poster.sample.json` | 顶层 `poster{}` + 复用 `viz.route[]`（**示例数据**） |
 
 `examples/*.html` 是**生成物但入库**——为了让 clone 下来不跑任何东西就能浏览。**不要手改**：CI 会重新渲染并逐字节比对，不同步直接失败。改完样本跑 `python3 scripts/build_examples.py --write`。
 
@@ -204,9 +216,9 @@ python3 scripts/build_examples.py --write     # 改完样本后重建
 SKILL.md                      Skill 主文件：决策 §1–§4 + 契约 + 呈现 §5–§6
 CHANGELOG.md                  变更记录，含每次的向后兼容性判定
 CONTRIBUTING.md               贡献指引
-assets/*.sample.json          4 份样本 —— 契约的可执行定义
-examples/*.html               4 份渲染成品（生成物，入库供浏览）
-docs/screenshots/             示例截图（430px 视口 ×2x，全页 + 首屏）
+assets/*.sample.json          5 份样本 —— 契约的可执行定义（含海报）
+examples/*.html               5 份渲染成品（4 路书 + 1 海报；生成物，入库供浏览）
+docs/screenshots/             示例截图（路书 430px×2x；海报 3:4 全页）
 references/
   planning-rules.md           §1–§11 行程合理性质疑规则（规划阶段必读）
   roadbook-spec.md            JSON 字段与交付口径（每次产出必读）
@@ -214,8 +226,9 @@ references/
   amap-tools.md               高德 MCP 参数与调用顺序
 scripts/
   build_swiss.py              JSON → 包豪斯精装版 HTML（纯标准库）
+  build_poster.py             JSON → 单页 3:4 路线海报（纯标准库，可选出口）
   build_viz.py                JSON → 内联 SVG 图表（纯标准库）
-  check_quality.py            文本质量门禁（纯标准库）
+  check_quality.py            文本质量门禁（纯标准库；海报用 --poster）
   probe_layout.js             布局门禁（Node + Playwright）
   build_examples.py           示例重建 / 防漂移校验
 ```
@@ -226,7 +239,7 @@ scripts/
 
 - **无高德 MCP 时里程是估算值**，这是可信度下限，必须在输出里声明（写在 `footer`，标明是高德实测还是公开估算）。
 - **跨时区不做机器换算**：`flights[].arr` 由人算好后填入，渲染器只负责排版。
-- **单页滚动，不是多页小册子**。本 Skill 的核心交付物含一整套交互（高德唤起 CTA、复制链接、微信打开提示），多页印刷模型里没有它们的位置。
+- **单页滚动，不是多页小册子**。本 Skill 的核心交付物含一整套交互（高德唤起 CTA、复制链接、微信打开提示），多页印刷模型里没有它们的位置。要分享图时走可选出口 `build_poster.py`（3:4 竖版海报），与路书互补。
 - **无衬线标题是刻意选择**，不提供衬线选项。
 - **兜底重皮是「重皮」非「重排」**：保留时间轴/按钮/表格结构，只换视觉语言。
 

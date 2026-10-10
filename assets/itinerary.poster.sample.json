@@ -1,0 +1,78 @@
+{
+  "_comment": "【示例样本 · 非核实数据】摩旅一日线海报演示。地名与里程为示意值，仅用于展示 poster{} 契约与 build_poster.py 输出；真实行程须按 SKILL.md §2 核实并标注来源。海报是独立产物（分享/封面），不是路书皮肤——见 references/design-language-print.md。",
+
+  "title": "小绿汁一日摩旅（示例）",
+  "eyebrow": "MOTO ROUTE · 示例样本",
+  "title_lines": ["骑进", "80 年代"],
+  "subtitle": "昆明 → 小绿汁 · 示例 134km · 国道摩旅一日线",
+  "amap_uri": "https://uri.amap.com/search?keyword=%E5%B0%8F%E7%BB%BF%E6%B1%81&src=roadbook&coordinate=gaode&callnative=1",
+
+  "mileage_source": "示例估算，非高德实测",
+  "query_date": "YYYY-MM-DD",
+
+  "weather": [],
+  "stages": [],
+  "decisions": [
+    {
+      "id": "D1",
+      "conclusion": "示例：把海报作为路书的可选出口，而不是替换精装版 HTML",
+      "reason": "海报是一页分享图，路书是多段可交互页面；两套令牌正面冲突（见 design-language-print.md §1）",
+      "rejected_alternative": "在 build_swiss.py 里加 --theme print",
+      "tradeoff": "多一个脚本，换身份清晰"
+    }
+  ],
+  "tickets": [],
+  "clothing": [],
+  "tips": [
+    "本样本全部数字为示例，交付真行程前必须核实。",
+    "路线图是示意图，不是真实地图，不得当地图读。"
+  ],
+
+  "viz": {
+    "route": [
+      {"name": "昆明", "km": 0, "hours": 0, "note": "示例·起点", "icon": "pin"},
+      {"name": "碧鸡关", "km": 22, "hours": 0.4, "note": "示例"},
+      {"name": "草铺", "km": 16, "hours": 0.3, "note": "示例·补给", "icon": "fuel"},
+      {"name": "禄脿", "km": 17, "hours": 0.35, "note": "示例"},
+      {"name": "易门", "km": 48, "hours": 0.9, "note": "示例"},
+      {"name": "小绿汁·观景台", "km": 31, "hours": 0.7, "note": "示例·终点", "icon": "stay"}
+    ]
+  },
+
+  "poster": {
+    "kicker": "MOTO ROUTE · 昆明出发",
+    "endpoints": "KUNMING → LVZHI",
+    "title": "骑进 80 年代",
+    "highlight": "80",
+    "subtitle": "小绿汁 · 134km 国道摩旅一日线",
+    "subtitle_highlight": "134km",
+    "slogan": [
+      "一条60年的铜矿公路",
+      "把整座80年代小镇留在了峡谷里"
+    ],
+    "slogan_highlight": "80年代小镇",
+    "stats": [
+      {"value": "134km", "label": "单程全程国道"},
+      {"value": "2h56m", "label": "去程骑行", "accent": true},
+      {"value": "72拐", "label": "绿汁坡连续发卡弯"}
+    ],
+    "tags": ["#72道拐", "#国家工业遗产", "#好好的时光取景地", "#凤凰花海"],
+    "stamp": {
+      "status": "已骑行",
+      "proof": "√ 亲测",
+      "date": "2026.10.1",
+      "rotate": -10
+    },
+    "path": [
+      [0.18, 0.10],
+      [0.42, 0.22],
+      [0.28, 0.40],
+      [0.55, 0.52],
+      [0.48, 0.72],
+      [0.78, 0.88]
+    ],
+    "footer": "示例样本 · 路线为示意图，非真实地图 · 里程未经核实"
+  },
+
+  "footer": "示例样本 · 路线为示意图，非真实地图 · 里程未经核实"
+}
