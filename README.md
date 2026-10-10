@@ -33,7 +33,7 @@
 
 ### 出境 · 日本大阪进东京出（航班时间线）
 
-<img width="860" height="11452" alt="出境路书全页" src="docs/screenshots/04-flight-full.png">
+<img width="860" height="12732" alt="出境路书全页" src="docs/screenshots/04-flight-full.png">
 
 ---
 
