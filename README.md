@@ -118,6 +118,7 @@ python3 scripts/build_examples.py --write     # 改完样本后重建
 | `tickets[]` / `tickets_total` | 门票表 | `name/price/book` |
 | `clothing[]` | 穿着卡 | `group/items` |
 | `tips[]` | 注意事项 | 字符串数组 |
+| `checklist[]` | **可勾选出行清单**（可选） | `text/group/when`；勾选状态存本机 `localStorage`，不联网 |
 | `budget_note` | 预算口径声明 | 紧贴预算图 |
 | `footer` | 页脚 | **里程/天气来源写这里**，不另设字段 |
 | `viz` | 图表数据块 | 见下 |
@@ -189,7 +190,7 @@ python3 scripts/build_examples.py --write     # 改完样本后重建
 | [`examples/01-selfdrive-chengdu-daocheng.html`](examples/01-selfdrive-chengdu-daocheng.html) | `assets/itinerary.sample.json` | 自驾完整四图 + `decisions[]` |
 | [`examples/02-bike-qinghai-lake.html`](examples/02-bike-qinghai-lake.html) | `assets/itinerary.bike.sample.json` | `m`/`gain` 爬升契约，故意不给 `elevation[]` |
 | [`examples/03-team-swimlane.html`](examples/03-team-swimlane.html) | `assets/itinerary.team.sample.json` | `viz.swimlane` 泳道图（7 人 × 11 天） |
-| [`examples/04-flight-japan.html`](examples/04-flight-japan.html) | `assets/itinerary.flight.sample.json` | `route_line` / `stays[]` / `flights[]` + 非城市天气格 |
+| [`examples/04-flight-japan.html`](examples/04-flight-japan.html) | `assets/itinerary.flight.sample.json` | `route_line` / `stays[]` / `flights[]` + 非城市天气格 + `checklist[]` |
 
 `examples/*.html` 是**生成物但入库**——为了让 clone 下来不跑任何东西就能浏览。**不要手改**：CI 会重新渲染并逐字节比对，不同步直接失败。改完样本跑 `python3 scripts/build_examples.py --write`。
 

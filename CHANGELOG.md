@@ -2,6 +2,66 @@
 
 > 变更记录。**向后兼容性单独标注**，因为本 skill 的产物是要交付给人的 HTML，静默改变渲染结果 = 静默改交付物。
 
+## 2026-10-10（六）— 订单截图 / 邮件识别流程 + 可勾选出行清单 `checklist[]`
+
+借鉴 Paths（trip.gopaths.ai）的两处做法，按本 skill 的「决策先定死 + 单文件离线」口径落地；
+其多人协作、账号分享、对话改行程、实时天气等**不借**（要后端或违背两半不能混）。
+
+### 向后兼容性
+
+✅ **对既有 JSON 完全兼容**。`checklist[]` 是可选字段，**不给时不注入任何 HTML / CSS / JS**：
+示例 01 / 02 / 03 重建后**逐字节未变**（`cmp` 一致）；`"checklist": []` 渲染结果也与示例 01 逐字节一致。
+⚠️ 示例 04 **有变化**——是因为样本主动加了 `checklist[]`：新增 1 个 CSS 块、末尾第 10 分区「出行清单」、
+1 个 `<script>`；前 9 个分区的字节未动。
+
+### 变更
+
+**① 订单截图 / 邮件识别（纯流程文字 + 契约口径，不写代码）**
+
+- `SKILL.md` §2 新增「订单截图 / 邮件识别」：机票 / 火车票 / 酒店确认单 → **只抽取不推断** →
+  列**待确认表**（字段 / 识别值 / 来源 / 置信）→ **用户确认后才写入**现有字段（`flights[]` / `stays[]` /
+  `stops[].km`）→ 看不清的标「未核实」，不猜。
+- **来源标注复用现有字段**，不新造 `source`：逐条写 `flights[].note` / `stops[].tips`，整份汇总写 `footer`
+  （`references/roadbook-spec.md` 新增「字段来源标注」表）。
+- **敏感信息不落盘**：完整订单号 / 票号 / PNR 只留后四位；证件号、手机号、付款卡号、他人全名一律不写。
+
+**② 可勾选的出行清单 `checklist[]`**
+
+- 契约：每项 `text`（必给，支持 `<br>`）+ 可选 `group` / `when`。`group` 相同的连续项自动归组
+  （同 `flights[].leg` 的规则：按数组顺序、不排序）；缺 `text` 的项与非对象项跳过。
+- `scripts/build_swiss.py`：注意事项之后插入「出行清单」分区（序号由 `_add()` 计数器给）。
+  - 原生 `<input type="checkbox">` + `<label>` 整行可点；`accent-color` 用路书红，单一强调色不破。
+  - **勾选状态只存本机 `localStorage`**：key = `roadbook-checklist:` + `sha1(title␟subtitle)[:10]`，
+    条目用 `sha1(group␟text)[:8]` 定位而**不用数组下标**——改顺序、插新项不会把勾错位；
+    `file://` 下多份路书共用一个 origin 时也互不串号。同组同文的重复项加 `-2` 后缀各自独立。
+  - `localStorage` 不可用（隐私模式等）时静默降级为「本次打开有效」，不报错。
+  - 「已完成 n / N」计数 + 「清空勾选」按钮；`@media print` 隐藏按钮、条目不跨页断开、保留勾选状态。
+  - 不联网、不引外部库、无新 `id`（不碰门禁第 6 项）；纯标准库（新增 `hashlib`）。
+- `references/booking-and-budget.md` §7：要逐项做完的动作改指向 `checklist[]`，§1 倒计时节点用 `when` 落进去；
+  订单号「路书里只写后四位」。
+- `assets/itinerary.flight.sample.json` 加 7 项 / 3 组清单（证件与凭证 / 出发前 48h / 随身行李），
+  与 `tips[]` 分工：tips 讲「要知道什么」，checklist 列「要做完什么」，不整句重复。
+- 文档同步：`SKILL.md` 契约表 + 「出行清单」一节、`roadbook-spec.md` 字段表、`README.md` 契约表与示例表、
+  `design-language.md` 结构映射。
+
+### 为什么不动 `build_viz.py`
+
+它不是独立输出模板，而是 `build_swiss.py` 调用的**纯 SVG 图表函数**（`render_viz(d) -> html`），
+只消费 `weather[]` 与 `viz{}`。清单是交互控件不是图表，放进去会破坏它「纯函数、与数据结构无耦合」的定位。
+
+### 验证
+
+- `build_examples.py --write` → 4/4 重建 + 门禁 PASS；随后 `--check` → **4/4 同步且过门禁**
+- `check_quality.py` → **4/4 PASS**（9 项）；边界样本（无组项、重复项、`<br>`、`<script>` 被转义、缺 `text` 项、非对象项）PASS
+- `probe_layout.js` → **4 示例 × 4 视口全 PASS**（box 上临时装 playwright，`NODE_PATH` 指过去跑）
+- 行为实测（playwright，375px）：点文字可勾选 → 计数 `2 / 7` → `localStorage` 写入 → **刷新后状态保留** →
+  清空后计数归零、key 移除；无页面报错、**零网络请求**；print 媒体下按钮隐藏，导出 PDF 勾选可见
+
+### 已知边界
+
+- `docs/screenshots/04-flight-*.png` 未重拍（不含新分区）——截图环境字体与本次验证机不同，重拍会引入无关差异。
+- 勾选状态只在**同一台设备、同一浏览器**里有效；路书转发给同行者后各勾各的，这是刻意的（不联网）。
+
 ## 2026-10-09（五）— 新增可选出口：行程动画（map-motion 数据桥）
 
 ### 向后兼容性

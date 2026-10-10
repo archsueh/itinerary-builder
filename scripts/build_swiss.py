@@ -13,6 +13,7 @@ generous whitespace, left-aligned typographic hierarchy. No gradients, no neon,
 no emoji icons, no dark mode — per anti-AI-slop + Hsueh 包豪斯极简 aesthetic.
 Stdlib only: re-runnable, no pandoc, no external deps, no network calls.
 """
+import hashlib
 import json
 import html
 import os
@@ -205,6 +206,87 @@ if _flights:
                      sep=" · " if carrier else "", route=route, dur=dur, meta=meta)
     flight_html = flight_html.rstrip("\n")
 
+# ---- checklist（可勾选的出行清单）----
+# 每项 text 必给；group 相同的连续项归为一组（同 flights[].leg 的规则：按数组顺序，
+# 不排序）；when 是自由文本的时点标签（「T-7」「出发当天」）。
+# 勾选状态只存在本机 localStorage，不联网。key = 行程标识 + 条目指纹：
+#   - 行程标识取 title + subtitle 的哈希 → file:// 下多份路书共享同一 origin 时互不串号；
+#   - 条目指纹取 group + text 的哈希，不用数组下标 → 改顺序、插新项不会把勾错位。
+# 缺省（无 checklist）时 HTML / CSS / JS 全为空串，旧 JSON 的输出逐字节不变。
+
+
+def _h(s, n):
+    return hashlib.sha1(s.encode("utf-8")).hexdigest()[:n]
+
+
+ck_html = ""
+ck_css = ""
+ck_script = ""
+_ck = [c for c in (d.get("checklist") or []) if isinstance(c, dict) and c.get("text")]
+if _ck:
+    ck_trip = _h("{}\x1f{}".format(d.get("title", ""), d.get("subtitle", "")), 10)
+    seen = {}
+    ck_groups = []
+    for c in _ck:
+        g = c.get("group") or ""
+        k = _h("{}\x1f{}".format(g, c["text"]), 8)
+        seen[k] = seen.get(k, 0) + 1
+        if seen[k] > 1:  # 同组同文的重复项，各自独立勾选
+            k = "{}-{}".format(k, seen[k])
+        if ck_groups and ck_groups[-1][0] == g:
+            ck_groups[-1][1].append((k, c))
+        else:
+            ck_groups.append((g, [(k, c)]))
+    ck_html = ('    <div class="ck-bar"><span class="ck-count">已完成 0 / {n}</span>'
+               '<button class="ck-reset" type="button">清空勾选</button></div>\n').format(n=len(_ck))
+    for g, rows in ck_groups:
+        ck_html += '    <div class="ck-group">\n'
+        if g:
+            ck_html += '      <div class="ck-g">{}</div>\n'.format(esc(g))
+        for k, c in rows:
+            when = ('<span class="ck-when">{}</span>'.format(esc(c["when"]))
+                    if c.get("when") else "")
+            ck_html += (
+                '      <label class="ck-item"><input class="ck-box" type="checkbox" data-ck="{k}">'
+                '<span class="ck-body">{when}{text}</span></label>\n'
+            ).format(k=esc(k), when=when, text=esc_text(c["text"]))
+        ck_html += '    </div>\n'
+    ck_html = ck_html.rstrip("\n")
+    ck_css = """/* checklist */
+.ck-bar{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px;}
+.ck-count{font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.04em; font-variant-numeric:tabular-nums;}
+.ck-reset{border:none; background:none; padding:4px 0; color:var(--faint); font-size:12px; cursor:pointer; font-family:inherit; text-decoration:underline; text-underline-offset:3px;}
+.ck-reset:active{color:var(--accent);}
+.ck-group{margin-top:18px;}
+.ck-g{margin-bottom:6px; font-size:11.5px; font-weight:700; letter-spacing:.14em; color:var(--accent); text-transform:uppercase;}
+.ck-item{display:grid; grid-template-columns:22px 1fr; column-gap:10px; align-items:start; padding:9px 0; border-top:1px solid var(--line); cursor:pointer;}
+.ck-group .ck-item:first-of-type{border-top:2px solid var(--ink);}
+.ck-box{width:16px; height:16px; margin:3px 0 0; accent-color:var(--accent); cursor:pointer;}
+.ck-body{min-width:0; font-size:13.5px; color:#3a352d; line-height:1.68; overflow-wrap:anywhere;}
+.ck-when{display:inline-block; margin-right:8px; font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--faint); font-variant-numeric:tabular-nums;}
+.ck-box:checked+.ck-body{color:var(--faint); text-decoration:line-through; text-decoration-color:var(--rule);}
+@media print{
+  .ck-reset{display:none;}
+  .ck-item{break-inside:avoid; page-break-inside:avoid;}
+  .ck-box{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+}
+"""
+    ck_script = """<script>
+(function(){
+  var KEY=%s,st={},boxes=document.querySelectorAll('.ck-box'),cnt=document.querySelector('.ck-count'),rst=document.querySelector('.ck-reset');
+  try{st=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){st={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+  function count(){var n=0;for(var i=0;i<boxes.length;i++){if(boxes[i].checked)n++;}if(cnt)cnt.textContent='已完成 '+n+' / '+boxes.length;}
+  for(var i=0;i<boxes.length;i++){(function(b){
+    var k=b.getAttribute('data-ck');b.checked=!!st[k];
+    b.addEventListener('change',function(){if(b.checked){st[k]=1;}else{delete st[k];}save();count();});
+  })(boxes[i]);}
+  if(rst){rst.addEventListener('click',function(){st={};for(var i=0;i<boxes.length;i++){boxes[i].checked=false;}try{localStorage.removeItem(KEY);}catch(e){}count();});}
+  count();
+})();
+</script>
+""" % json.dumps("roadbook-checklist:" + ck_trip)
+
 # ---- how-to steps ----
 steps = [
     "在<b>手机浏览器</b>（Safari / Chrome）中打开本页；微信内请先用「在浏览器中打开」。",
@@ -258,6 +340,8 @@ _add("门票与花费参考",
          ticket_rows, esc(d.get("tickets_total", "")), esc(d.get("budget_note", ""))))
 _add("穿着建议", "    " + cloth_html)
 _add("注意事项", '    <ul class="tips">{}</ul>'.format(tip_items))
+if ck_html:
+    _add("出行清单", ck_html)
 
 sections_html = "\n".join(_sections)
 
@@ -420,11 +504,12 @@ HTML = """<!DOCTYPE html>
   function fallback(t){{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{{document.execCommand('copy');show('已复制，去浏览器地址栏粘贴');}}catch(e){{show('请长按链接文本手动复制');}}document.body.removeChild(ta);}}
 }})();
 </script>
-</body>
+{ck_script}</body>
 </html>
 """.format(
     title=esc(d.get("title", "")),
-    css=CSS,
+    css=CSS + ck_css,
+    ck_script=ck_script,
     eyebrow=esc(d.get("eyebrow", "")),
     t1=esc(d.get("title_lines", [""])[0]),
     t2=esc(d.get("title_lines", ["", ""])[1]) if len(d.get("title_lines", [])) > 1 else "",

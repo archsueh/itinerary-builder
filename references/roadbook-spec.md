@@ -16,7 +16,7 @@
 
 ## 二、路书 JSON 字段规范
 
-模板示例：`assets/itinerary.sample.json`（自驾，四图全齐）、`assets/itinerary.flight.sample.json`（出境，含 `route_line`/`stays[]`/`flights[]`）。构建：`python3 scripts/build_swiss.py <data.json> [out.html]`。
+模板示例：`assets/itinerary.sample.json`（自驾，四图全齐）、`assets/itinerary.flight.sample.json`（出境，含 `route_line`/`stays[]`/`flights[]`/`checklist[]`）。构建：`python3 scripts/build_swiss.py <data.json> [out.html]`。
 
 | 字段 | 说明 |
 |---|---|
@@ -32,9 +32,24 @@
 | `tickets[]` | `name`、`price`、`book`（预约/区间车说明）；`tickets_total` 人均合计；`budget_note` 价格时效声明 |
 | `clothing[]` | `group`（场景+温度）、`items`（分层穿搭与装备） |
 | `tips[]` | 注意事项条目（行车、高反、车况、预约、应急） |
+| `checklist[]` | **可选**，可勾选的出行清单：`text`（必给，支持 `<br>`）、`group`（分组名，相同值的连续项自动归组，按数组顺序）、`when`（自由文本时点标签，如 `T-7` / `出发当天`）。渲染为原生 checkbox，勾选状态只存本机 `localStorage`（key 含行程标识），不联网。**不给则整节不出现、输出与旧版逐字节一致**。tips 讲「要知道什么」，checklist 列「要做完什么」，同一句不两处写 |
 | `decisions[]` | **论证字段**（渲染时忽略，人必读）：`id`/`conclusion`/`reason`/`rejected_alternative`/`tradeoff` |
 | `viz` | 图表数据块：`route[]` / `budget[]` / `elevation[]`（可省略）/ `swimlane`（多人并行）；契约见 SKILL.md「二、数据契约」 |
-| `footer` | 数据来源与查询日期；可用 `<br>` 换行 |
+| `footer` | 数据来源与查询日期；可用 `<br>` 换行。**订单截图 / 邮件的汇总来源也写这里**（见下「字段来源标注」） |
+
+### 字段来源标注（订单截图 / 邮件识别）
+
+从用户给的机票、火车票、酒店确认单（截图或邮件）抽取的字段，**确认后才写入**（流程见 SKILL.md §2「订单截图 / 邮件识别」），并按下表标来源。**不新增 `source` 字段**——复用现有的 `note` / `tips` / `footer`：
+
+| 写入位置 | 来源标在哪 | 写法示例 |
+|---|---|---|
+| `flights[]` | 该行 `note` | `"订单尾号 4821 · 来源：截图 2026-10-02，已与用户确认"` |
+| `stays[]`（无 note 字段） | 对应入住日 stop 的 `tips`，或 `footer` 汇总 | `"中之岛东 10/6 入住 · 10/9 退房 · 订单尾号 0317（邮件 2026-09-28）"` |
+| 火车（写进 `stops[].km`） | 同一 stop 的 `tips` | `"G2902 订单尾号 5560（截图 2026-10-02）"` |
+| 整份行程 | `footer` 一行汇总 | `"航班 / 住宿据用户提供的订单截图与邮件 2026-10-02 抽取并经确认"` |
+
+- 识别不清或单据上没有的字段，值写「未核实」，**不猜、不按常识补**；确认前不渲染。
+- **禁止落盘的敏感信息**：完整订单号 / 票号 / PNR（只留**后四位**）、证件号（身份证、护照）、手机号、付款卡号、他人全名（写「你 / 对象 / 两人」）。路书会被转发、打印、在手机上打开。
 
 内容口径（硬要求）：
 
